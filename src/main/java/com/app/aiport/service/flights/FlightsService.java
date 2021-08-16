@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -15,7 +17,11 @@ public class FlightsService {
 
     private final FlightsRepository flightsRepository;
 
-    public List<Flight> getAllFlights() {
-        return flightsRepository.findAll();
+    public List<Flight> getFlights(String flightNo) {
+        return isNull(flightNo) ? flightsRepository.findAll() : flightsRepository.findFlightByFlightNoContaining(flightNo);
+    }
+
+    public Flight getFlightById(Integer id) {
+        return flightsRepository.findById(id).orElse(null);
     }
 }

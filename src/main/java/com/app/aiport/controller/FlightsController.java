@@ -4,9 +4,7 @@ import com.app.aiport.entity.Flight;
 import com.app.aiport.service.flights.FlightsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,7 +17,12 @@ public class FlightsController {
     private final FlightsService flightsService;
 
     @GetMapping
-    public List<Flight> getAllFlights() {
-        return flightsService.getAllFlights();
+    public List<Flight> getAllFlights(@RequestParam(required = false) String flightNo) {
+        return flightsService.getFlights(flightNo);
+    }
+
+    @GetMapping("/{id}")
+    public Flight getFlightById(@PathVariable Integer id) {
+        return flightsService.getFlightById(id);
     }
 }
