@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/demo
+    username: postgres
+    password: 1303
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database: POSTGRESQL
+    properties:
+      hibernate:
+        default_schema: bookings
