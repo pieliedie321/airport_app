@@ -1,4 +1,4 @@
-package com.app.aiport.service.flights;
+package com.app.aiport.service;
 
 import com.app.aiport.entity.Flight;
 import com.app.aiport.repository.FlightsRepository;

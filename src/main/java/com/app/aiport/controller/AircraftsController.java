@@ -1,14 +1,14 @@
 package com.app.aiport.controller;
 
+import javax.validation.Valid;
+import java.util.List;
+
 import com.app.aiport.entity.Aircraft;
-import com.app.aiport.service.airports.AircraftsService;
+import com.app.aiport.service.AircraftsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @Slf4j
 @RestController

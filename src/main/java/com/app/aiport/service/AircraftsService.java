@@ -1,13 +1,13 @@
-package com.app.aiport.service.airports;
+package com.app.aiport.service;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 import com.app.aiport.entity.Aircraft;
 import com.app.aiport.repository.AircraftsRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
-import java.util.List;
 
 import static java.util.Objects.isNull;
 
