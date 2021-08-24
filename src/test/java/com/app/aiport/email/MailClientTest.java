@@ -3,8 +3,8 @@ package com.app.aiport.email;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-import java.util.Properties;
 
+import com.app.aiport.AiportApplication;
 import com.app.aiport.utils.EmailServiceUtil;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
@@ -14,6 +14,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -35,6 +38,12 @@ public class MailClientTest {
     @Autowired
     private EmailServiceUtil emailService;
 
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private SpringTemplateEngine springTemplateEngine;
+
     private GreenMail smtpServer;
 
     @Before
@@ -51,18 +60,12 @@ public class MailClientTest {
     @Test
     public void shouldSendMail() throws Exception {
 
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("localhost");
-        mailSender.setPort(3025);
-        mailSender.setUsername("admin");
-        mailSender.setPassword("admin");
+        ApplicationContext context = new AnnotationConfigApplicationContext(AiportApplication.class);
 
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-        emailService = new EmailServiceUtil(mailSender, new SpringTemplateEngine());
+        mailSender = context.getBean(JavaMailSenderImpl.class);
+        springTemplateEngine = context.getBean(SpringTemplateEngine.class);
+
+        emailService = new EmailServiceUtil(mailSender, springTemplateEngine);
 
         EmailContainer email = new EmailContainer(FULL_NAME, EMAIL_TEXT, EMAIL_TO, EMAIL_SUBJECT);
         emailService.sendEmail(email);
