@@ -5,5 +5,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
+/**
+ * Конфигурация проекта.
+ */
 public class ApplicationConfig {
 }
