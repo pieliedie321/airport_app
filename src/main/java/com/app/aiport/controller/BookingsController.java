@@ -16,31 +16,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST контроллер для взаимодействия с bookings репо.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/bookings")
 @AllArgsConstructor
 public class BookingsController {
 
-    private final BookingsService bookingsService;
+  private final BookingsService bookingsService;
 
-    @GetMapping
-    public List<Booking> getAllBookings() {
-        return bookingsService.getAllBookings();
-    }
+  @GetMapping
+  public List<Booking> getAllBookings() {
+    return bookingsService.getAllBookings();
+  }
 
-    @GetMapping("/{id}")
-    public Booking getBookingById(@PathVariable String id) {
-        return bookingsService.getBookingById(id);
-    }
+  @GetMapping("/{id}")
+  public Booking getBookingById(@PathVariable String id) {
+    return bookingsService.getBookingById(id);
+  }
 
-    @PostMapping
-    public ResponseEntity<Booking> saveBooking(@RequestBody @Valid Booking booking) {
-        return ResponseEntity.ok(bookingsService.saveNewBooking(booking));
-    }
+  @PostMapping
+  public ResponseEntity<Booking> saveBooking(@RequestBody @Valid Booking booking) {
+    return ResponseEntity.ok(bookingsService.saveNewBooking(booking));
+  }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteFlight(@PathVariable String id) {
-        return ResponseEntity.ok(bookingsService.deleteBookingsByCode(id));
-    }
+  @DeleteMapping("/{id}")
+  public ResponseEntity<String> deleteFlight(@PathVariable String id) {
+    return ResponseEntity.ok(bookingsService.deleteBookingsByCode(id));
+  }
 }

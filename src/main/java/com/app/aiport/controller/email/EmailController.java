@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class EmailController {
 
-    private final EmailServiceUtil emailService;
+  private final EmailServiceUtil emailService;
 
-    @PostMapping
-    @ResponseBody
-    public ResponseEntity<String> sendMail(@RequestBody @Valid EmailContainer emailContainer) throws MessagingException {
-        emailService.sendEmail(emailContainer);
-        return ResponseEntity.ok("Email sent!");
-    }
+  @PostMapping
+  @ResponseBody
+  public ResponseEntity<String> sendMail(@RequestBody @Valid EmailContainer emailContainer) throws MessagingException {
+    emailService.sendEmail(emailContainer);
+    return ResponseEntity.ok("Email sent!");
+  }
 }

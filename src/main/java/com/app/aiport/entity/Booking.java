@@ -16,14 +16,14 @@ import lombok.Data;
 @Table(name = "bookings")
 public class Booking {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_ref", columnDefinition = "bpchar(3)")
-    private String bookingRef;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "book_ref", columnDefinition = "bpchar(3)")
+  private String bookingRef;
 
-    @Column(name = "book_date")
-    private Date bookDate;
+  @Column(name = "book_date")
+  private Date bookDate;
 
-    @Column(name = "total_amount")
-    private BigDecimal totalAmount;
+  @Column(name = "total_amount")
+  private BigDecimal totalAmount;
 }

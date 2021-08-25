@@ -14,14 +14,14 @@ import lombok.Data;
 @Table(name = "aircrafts")
 public class Aircraft {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "aircraft_code", columnDefinition = "bpchar(3)")
-    private String code;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "aircraft_code", columnDefinition = "bpchar(3)")
+  private String code;
 
-    @Column(name = "model")
-    private String model;
+  @Column(name = "model")
+  private String model;
 
-    @Column(name = "range")
-    private Integer range;
+  @Column(name = "range")
+  private Integer range;
 }

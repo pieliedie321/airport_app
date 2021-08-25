@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.app.aiport.dto.ExistedAirports;
 import lombok.Data;
 
 @Entity
@@ -14,23 +15,23 @@ import lombok.Data;
 @Table(name = "airports")
 public class Airport {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "airport_code", columnDefinition = "bpchar(10)")
-    private String airportCode;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "airport_code", columnDefinition = "bpchar(10)")
+  private ExistedAirports airportCode;
 
-    @Column(name = "airport_name")
-    private String airportName;
+  @Column(name = "airport_name")
+  private String airportName;
 
-    @Column(name = "city")
-    private String city;
+  @Column(name = "city")
+  private String city;
 
-    @Column(name = "longitude")
-    private Double longitude;
+  @Column(name = "longitude")
+  private Double longitude;
 
-    @Column(name = "latitude")
-    private Double latitude;
+  @Column(name = "latitude")
+  private Double latitude;
 
-    @Column(name = "timezone")
-    private String timezone;
+  @Column(name = "timezone")
+  private String timezone;
 }

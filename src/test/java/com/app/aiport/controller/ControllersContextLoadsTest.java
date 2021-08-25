@@ -10,27 +10,27 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest
 public class ControllersContextLoadsTest {
 
-    @Autowired
-    private AirportsController airportsController;
+  @Autowired
+  private AirportsController airportsController;
 
-    @Autowired
-    private AircraftsController aircraftsController;
+  @Autowired
+  private AircraftsController aircraftsController;
 
-    @Autowired
-    private BoardingPassesController passesController;
+  @Autowired
+  private BoardingPassesController passesController;
 
-    @Autowired
-    private BookingsController bookingsController;
+  @Autowired
+  private BookingsController bookingsController;
 
-    @Autowired
-    private FlightsController flightsController;
+  @Autowired
+  private FlightsController flightsController;
 
-    @Test
-    public void contextLoads() throws Exception {
-        assertThat(airportsController).isNotNull();
-        assertThat(aircraftsController).isNotNull();
-        assertThat(bookingsController).isNotNull();
-        assertThat(passesController).isNotNull();
-        assertThat(flightsController).isNotNull();
-    }
+  @Test
+  public void contextLoads() {
+    assertThat(airportsController).isNotNull();
+    assertThat(aircraftsController).isNotNull();
+    assertThat(bookingsController).isNotNull();
+    assertThat(passesController).isNotNull();
+    assertThat(flightsController).isNotNull();
+  }
 }

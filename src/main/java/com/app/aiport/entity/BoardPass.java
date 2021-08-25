@@ -14,17 +14,17 @@ import lombok.Data;
 @Table(name = "boarding_passes")
 public class BoardPass {
 
-    @Id
-    @Column(name = "ticket_no", columnDefinition = "bpchar(13)")
-    private String ticketNo;
+  @Id
+  @Column(name = "ticket_no", columnDefinition = "bpchar(13)")
+  private String ticketNo;
 
-    @ManyToOne
-    @JoinColumn(name = "flight_id")
-    Flight flight;
+  @ManyToOne
+  @JoinColumn(name = "flight_id")
+  Flight flight;
 
-    @Column(name = "boarding_no")
-    private Integer boardingNo;
+  @Column(name = "boarding_no")
+  private Integer boardingNo;
 
-    @Column(name = "seat_no")
-    private String seatNo;
+  @Column(name = "seat_no")
+  private String seatNo;
 }

@@ -14,20 +14,20 @@ import lombok.Data;
 @Table(name = "tickets")
 public class Ticket {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ticket_no", columnDefinition = "bpchar(13)")
-    private String ticketNo;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ticket_no", columnDefinition = "bpchar(13)")
+  private String ticketNo;
 
-    @Column(name = "book_ref", columnDefinition = "bpchar(6)")
-    private String bookRef;
+  @Column(name = "book_ref", columnDefinition = "bpchar(6)")
+  private String bookRef;
 
-    @Column(name = "passenger_id")
-    private String passengerId;
+  @Column(name = "passenger_id")
+  private String passengerId;
 
-    @Column(name = "passenger_name")
-    private String passengerName;
+  @Column(name = "passenger_name")
+  private String passengerName;
 
-    @Column(name = "contact_data", columnDefinition = "jsonb")
-    private String contactData;
+  @Column(name = "contact_data", columnDefinition = "jsonb")
+  private String contactData;
 }
