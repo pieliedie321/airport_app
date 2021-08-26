@@ -32,7 +32,7 @@ public class BookingsController {
     return bookingsService.getAllBookings();
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/id/{id}")
   public Booking getBookingById(@PathVariable String id) {
     return bookingsService.getBookingById(id);
   }

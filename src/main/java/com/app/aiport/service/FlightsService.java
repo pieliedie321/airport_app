@@ -4,7 +4,6 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
-import com.app.aiport.dto.ExistedAirports;
 import com.app.aiport.entity.Flight;
 import com.app.aiport.repository.FlightsRepository;
 import lombok.AllArgsConstructor;
@@ -39,16 +38,16 @@ public class FlightsService {
     return flightsRepository.findFlightsByScheduledDepartureBefore(departureDate);
   }
 
-  public List<Flight> getFlightsByAirport(ExistedAirports arrival, ExistedAirports departure) {
+  public List<Flight> getFlightsByAirport(String arrival, String departure) {
     if (isNull(arrival) && isNull(departure)) {
       throw new IllegalArgumentException("Arrival and departure can't be combined null");
     } else {
       if (isNull(departure)) {
-        return flightsRepository.findFlightsByArrivalAirport(arrival.toString());
+        return flightsRepository.findFlightsByArrivalAirport(arrival);
       } else if (isNull(arrival)) {
-        return flightsRepository.findFlightsByDepartureAirport(departure.toString());
+        return flightsRepository.findFlightsByDepartureAirport(departure);
       } else {
-        return flightsRepository.findFlightsByArrivalAirportAndDepartureAirport(arrival.toString(), departure.toString());
+        return flightsRepository.findFlightsByArrivalAirportAndDepartureAirport(arrival, departure);
       }
     }
   }

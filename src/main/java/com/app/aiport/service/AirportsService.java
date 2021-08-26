@@ -3,7 +3,6 @@ package com.app.aiport.service;
 import javax.transaction.Transactional;
 import java.util.List;
 
-import com.app.aiport.dto.ExistedAirports;
 import com.app.aiport.entity.Airport;
 import com.app.aiport.repository.AirportsRepository;
 import lombok.AllArgsConstructor;
@@ -35,8 +34,6 @@ public class AirportsService {
   }
 
   public List<Airport> getAirportsByTimezone(String timezone) {
-    Airport airport = new Airport();
-    airport.setAirportCode(ExistedAirports.AAQ);
     return airportsRepository.findAirportsByTimezoneContaining(timezone);
   }
 

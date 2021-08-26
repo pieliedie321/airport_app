@@ -43,7 +43,7 @@ public class AircraftsController {
     return aircraftservice.getAircraftsByRangeGreaterThan(range);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/id/{id}")
   public Aircraft getAircraftById(@PathVariable String id) {
     return aircraftservice.getAircraftById(id);
   }

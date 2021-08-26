@@ -32,7 +32,7 @@ public class BoardingPassesController {
     return boardingPassesService.getAllBoardingPasses();
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/id/{id}")
   public BoardPass getBookingById(@PathVariable String id) {
     return boardingPassesService.getBoardingPassById(id);
   }

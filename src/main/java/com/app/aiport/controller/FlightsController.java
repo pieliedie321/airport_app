@@ -3,7 +3,6 @@ package com.app.aiport.controller;
 import javax.validation.Valid;
 import java.util.List;
 
-import com.app.aiport.dto.ExistedAirports;
 import com.app.aiport.entity.Flight;
 import com.app.aiport.service.FlightsService;
 import lombok.AllArgsConstructor;
@@ -35,17 +34,17 @@ public class FlightsController {
   }
 
   @GetMapping("/airports")
-  public List<Flight> getFlightsByAirports(@RequestParam(required = false) ExistedAirports arrival,
-                                           @RequestParam(required = false) ExistedAirports departure) {
+  public List<Flight> getFlightsByAirports(@RequestParam(required = false) String arrival,
+                                           @RequestParam(required = false) String departure) {
     return flightsService.getFlightsByAirport(arrival, departure);
   }
 
-  @GetMapping("/{status}")
+  @GetMapping("/status/{status}")
   public List<Flight> getFlightsByStatus(@PathVariable String status) {
     return flightsService.getFlightsByStatus(status);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/id/{id}")
   public Flight getFlightById(@PathVariable Integer id) {
     return flightsService.getFlightById(id);
   }

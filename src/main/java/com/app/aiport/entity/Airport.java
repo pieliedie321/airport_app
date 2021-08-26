@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.app.aiport.dto.ExistedAirports;
 import lombok.Data;
 
 @Entity
@@ -18,7 +17,7 @@ public class Airport {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "airport_code", columnDefinition = "bpchar(10)")
-  private ExistedAirports airportCode;
+  private String airportCode;
 
   @Column(name = "airport_name")
   private String airportName;

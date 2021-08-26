@@ -33,17 +33,17 @@ public class AirportsController {
     return airportsService.getAirports(name);
   }
 
-  @GetMapping("/{city}")
+  @GetMapping("/city/{city}")
   public List<Airport> getAirportsByCity(@PathVariable String city) {
     return airportsService.getAirportsByCity(city);
   }
 
-  @GetMapping("/{timezone}")
+  @GetMapping("/timezone/{timezone}")
   public List<Airport> getAirportsByTimezone(@PathVariable String timezone) {
     return airportsService.getAirportsByTimezone(timezone);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/id/{id}")
   public Airport getFlightById(@PathVariable String id) {
     return airportsService.getAirportById(id);
   }
