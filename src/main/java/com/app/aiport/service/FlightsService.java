@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
-/**
- * Сервис доступа к flights репо.
- */
+/** Сервис доступа к flights репо. */
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -26,8 +24,9 @@ public class FlightsService {
   private final String DELETED = "Flight was deleted, with id: ";
 
   public List<Flight> getFlights(String flightNo) {
-    return isNull(flightNo) ? flightsRepository.findAll() :
-            flightsRepository.findFlightByFlightNoContaining(flightNo);
+    return isNull(flightNo)
+        ? flightsRepository.findAll()
+        : flightsRepository.findFlightByFlightNoContaining(flightNo);
   }
 
   public List<Flight> getFlightsByStatus(String status) {
@@ -58,8 +57,11 @@ public class FlightsService {
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public Flight saveNewFlight(Flight flight) {
-    log.debug("Saving new flight with id: " + flight.getFlightId()
-            + ", and flightNo: " + flight.getFlightNo());
+    log.debug(
+        "Saving new flight with id: "
+            + flight.getFlightId()
+            + ", and flightNo: "
+            + flight.getFlightNo());
     return flightsRepository.save(flight);
   }
 

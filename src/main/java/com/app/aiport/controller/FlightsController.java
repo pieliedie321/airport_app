@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * REST контроллер для взаимодействия с flights репо.
- */
+/** REST контроллер для взаимодействия с flights репо. */
 @Slf4j
 @RestController
 @RequestMapping("/flights")
@@ -34,8 +32,9 @@ public class FlightsController {
   }
 
   @GetMapping("/airports")
-  public List<Flight> getFlightsByAirports(@RequestParam(required = false) String arrival,
-                                           @RequestParam(required = false) String departure) {
+  public List<Flight> getFlightsByAirports(
+      @RequestParam(required = false) String arrival,
+      @RequestParam(required = false) String departure) {
     return flightsService.getFlightsByAirport(arrival, departure);
   }
 

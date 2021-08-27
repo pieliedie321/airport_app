@@ -18,7 +18,8 @@ public class EmailController {
 
   @PostMapping
   @ResponseBody
-  public ResponseEntity<String> sendMail(@RequestBody @Valid EmailContainer emailContainer) throws MessagingException {
+  public ResponseEntity<String> sendMail(@RequestBody @Valid EmailContainer emailContainer)
+      throws MessagingException {
     emailService.sendEmail(emailContainer);
     return ResponseEntity.ok("Email sent!");
   }

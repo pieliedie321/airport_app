@@ -9,9 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * Сервис доступа к bookings репо.
- */
+/** Сервис доступа к bookings репо. */
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -43,4 +41,3 @@ public class BookingsService {
     return DELETED;
   }
 }
-

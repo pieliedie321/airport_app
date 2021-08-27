@@ -2,7 +2,6 @@ package com.app.aiport.controller;
 
 import javax.validation.Valid;
 import java.util.List;
-
 import com.app.aiport.entity.BoardPass;
 import com.app.aiport.service.BoardingPassesService;
 import lombok.AllArgsConstructor;
@@ -16,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * REST контроллер для взаимодействия с boarding passes репо.
- */
+/** REST контроллер для взаимодействия с boarding passes репо. */
 @Slf4j
 @RestController
 @RequestMapping("/bpasses")

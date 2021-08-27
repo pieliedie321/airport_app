@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
-/**
- * Сервис доступа к aircrafts репо.
- */
+/** Сервис доступа к aircrafts репо. */
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -25,7 +23,9 @@ public class AircraftsService {
   private final String DELETED = "Aircraft deleted, with code: ";
 
   public List<Aircraft> getAircrafts(String model) {
-    return isNull(model) ? aircraftsRepository.findAll() : aircraftsRepository.findAircraftByModelContaining(model);
+    return isNull(model)
+        ? aircraftsRepository.findAll()
+        : aircraftsRepository.findAircraftByModelContaining(model);
   }
 
   public Aircraft getAircraftById(String id) {
@@ -42,7 +42,11 @@ public class AircraftsService {
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public Aircraft saveNewAircraft(Aircraft aircraft) {
-    log.debug("Saving new aircraft with code: " + aircraft.getCode() + ", and model: " + aircraft.getModel());
+    log.debug(
+        "Saving new aircraft with code: "
+            + aircraft.getCode()
+            + ", and model: "
+            + aircraft.getModel());
     return aircraftsRepository.save(aircraft);
   }
 

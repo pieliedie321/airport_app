@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * REST контроллер для взаимодействия с airports репо.
- */
+/** REST контроллер для взаимодействия с airports репо. */
 @Slf4j
 @RestController
 @RequestMapping("/airports")

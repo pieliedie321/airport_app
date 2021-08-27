@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
-/**
- * Сервис доступа к airports репо.
- */
+/** Сервис доступа к airports репо. */
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -25,8 +23,9 @@ public class AirportsService {
   private final String DELETED = "Airport deleted, with code: ";
 
   public List<Airport> getAirports(String name) {
-    return isNull(name) ? airportsRepository.findAll() :
-            airportsRepository.findAirportsByAirportNameContaining(name);
+    return isNull(name)
+        ? airportsRepository.findAll()
+        : airportsRepository.findAirportsByAirportNameContaining(name);
   }
 
   public List<Airport> getAirportsByCity(String city) {
@@ -43,8 +42,11 @@ public class AirportsService {
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public Airport saveNewAirport(Airport airport) {
-    log.debug("Saving new airport with code: " + airport.getAirportCode()
-            + ", and name: " + airport.getAirportName());
+    log.debug(
+        "Saving new airport with code: "
+            + airport.getAirportCode()
+            + ", and name: "
+            + airport.getAirportName());
     return airportsRepository.save(airport);
   }
 
