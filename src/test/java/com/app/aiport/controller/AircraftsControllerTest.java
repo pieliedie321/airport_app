@@ -1,5 +1,6 @@
 package com.app.aiport.controller;
 
+import com.app.aiport.controller.AircraftsController;
 import com.app.aiport.service.AircraftsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,14 +20,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AircraftsController.class)
 public class AircraftsControllerTest {
 
-  @Autowired
-  private AircraftsController aircraftsController;
+  @Autowired private AircraftsController aircraftsController;
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @MockBean
-  private AircraftsService aircraftsService;
+  @MockBean private AircraftsService aircraftsService;
 
   @Test
   public void controllerInitializedCorrectly() {
@@ -35,15 +33,9 @@ public class AircraftsControllerTest {
 
   @Test
   public void testGetAircrafts() throws Exception {
-    mockMvc.perform(get("/aircrafts"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    mockMvc
+        .perform(get("/aircrafts"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
-
-//  @Test
-//  public void testGetAircraftById() throws Exception {
-//    mockMvc.perform(get("/aircrafts/773"))
-//            .andExpect(status().isOk())
-//            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-//  }
 }

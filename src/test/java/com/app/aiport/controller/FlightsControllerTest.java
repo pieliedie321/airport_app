@@ -1,5 +1,6 @@
 package com.app.aiport.controller;
 
+import com.app.aiport.controller.FlightsController;
 import com.app.aiport.service.FlightsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,14 +20,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(FlightsController.class)
 public class FlightsControllerTest {
 
-  @Autowired
-  private FlightsController flightsController;
+  @Autowired private FlightsController flightsController;
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @MockBean
-  private FlightsService flightsService;
+  @MockBean private FlightsService flightsService;
 
   @Test
   public void controllerInitializedCorrectly() {
@@ -35,16 +33,33 @@ public class FlightsControllerTest {
 
   @Test
   public void testGetFlights() throws Exception {
-    mockMvc.perform(get("/flights"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    mockMvc
+        .perform(get("/flights"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
 
-  //TODO переделать данный тест. Пока кидает exception ContentTypeNotSet
-//  @Test
-//  public void testGetFlightById() throws Exception {
-//    mockMvc.perform(get("/flights/id/1"))
-//            .andExpect(status().isOk())
-//            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-//  }
+  //  @Test
+  //  public void testGetFlightById() throws Exception {
+  //    mockMvc
+  //        .perform(get("/flights/id/1"))
+  //        .andExpect(status().isOk())
+  //        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  //  }
+
+  @Test
+  public void testGetFlightByStatus() throws Exception {
+    mockMvc
+        .perform(get("/flights/status/Arrived"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  public void testGetFlightsByAirport() throws Exception {
+    mockMvc
+        .perform(get("/flights/airports?arrival=VOZ&departure=DME"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
 }

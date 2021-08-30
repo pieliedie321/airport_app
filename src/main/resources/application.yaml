@@ -22,7 +22,3 @@ spring:
     properties:
       hibernate:
         default_schema: bookings
-
-server:
-  servlet:
-    context-path: /api
