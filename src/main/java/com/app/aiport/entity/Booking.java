@@ -6,22 +6,24 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.math.BigDecimal;
+import java.util.Date;
 
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "aircrafts")
-public class Aircraft {
+@Table(name = "bookings")
+public class Booking {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "aircraft_code", columnDefinition = "bpchar(3)")
-  private String code;
+  @Column(name = "book_ref", columnDefinition = "bpchar(3)")
+  private String bookingRef;
 
-  @Column(name = "model")
-  private String model;
+  @Column(name = "book_date")
+  private Date bookDate;
 
-  @Column(name = "range")
-  private Integer range;
+  @Column(name = "total_amount")
+  private BigDecimal totalAmount;
 }
