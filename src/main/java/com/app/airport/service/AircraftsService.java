@@ -1,5 +1,6 @@
 package com.app.airport.service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -23,9 +24,7 @@ public class AircraftsService {
   private final String DELETED = "Aircraft deleted, with code: ";
 
   public List<Aircraft> findAircrafts(String model) {
-    return isNull(model)
-        ? repository.findAll()
-        : repository.findAircraftByModelContaining(model);
+    return isNull(model) ? repository.findAll() : repository.findAircraftByModelContaining(model);
   }
 
   public List<Aircraft> findAircraftsByRangeGreaterThan(Integer range) {
@@ -55,5 +54,22 @@ public class AircraftsService {
     log.debug("Deleting aircraft with id: " + code);
     repository.deleteById(code);
     return DELETED;
+  }
+
+  @Transactional(value = Transactional.TxType.REQUIRED)
+  public Aircraft updateAircraft(Aircraft newAircraft, String id) {
+    return repository
+        .findById(id)
+        .map(
+            aircraft -> {
+              aircraft.setCode(id);
+              aircraft.setModel(newAircraft.getModel());
+              aircraft.setRange(newAircraft.getRange());
+              return repository.save(aircraft);
+            })
+        .orElseThrow(
+            () ->
+                new EntityNotFoundException(
+                    "Cannot find entity \"Aircraft\" to update, with id: " + id));
   }
 }

@@ -1,5 +1,6 @@
 package com.app.airport.service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
@@ -70,5 +71,29 @@ public class FlightsService {
     log.debug("Deleting flight with id: " + id);
     repository.deleteById(id);
     return DELETED;
+  }
+
+  @Transactional(value = Transactional.TxType.REQUIRED)
+  public Flight updateFlight(Flight newFLight, Integer id) {
+    return repository
+        .findById(id)
+        .map(
+            flight -> {
+              flight.setFlightId(id);
+              flight.setFlightNo(newFLight.getFlightNo());
+              flight.setScheduledDeparture(newFLight.getScheduledDeparture());
+              flight.setScheduledArrival(newFLight.getScheduledArrival());
+              flight.setDepartureAirport(newFLight.getDepartureAirport());
+              flight.setArrivalAirport(newFLight.getArrivalAirport());
+              flight.setStatus(newFLight.getStatus());
+              flight.setAircraftCode(newFLight.getAircraftCode());
+              flight.setActualArrival(newFLight.getActualArrival());
+              flight.setActualDeparture(newFLight.getActualDeparture());
+              return repository.save(flight);
+            })
+        .orElseThrow(
+            () ->
+                new EntityNotFoundException(
+                    "Cannot find entity \"Flight\" to update, with id: " + id));
   }
 }

@@ -4,15 +4,15 @@ import javax.validation.Valid;
 import java.util.List;
 
 import com.app.airport.entity.Ticket;
-import com.app.airport.entity.TicketFlight;
 import com.app.airport.service.TicketsService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,11 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 /** REST controller for ticket tickets repo. */
 @Slf4j
 @RestController
-@RequestMapping(value = "/tickets", produces="application/json")
-@AllArgsConstructor
+@RequestMapping(value = "/tickets", produces = "application/json")
 public class TicketsController {
 
-  private TicketsService service;
+  private final TicketsService service;
+
+  @Autowired
+  public TicketsController(TicketsService service) {
+    this.service = service;
+  }
 
   @GetMapping
   public List<Ticket> findAllTickets() {
@@ -62,5 +66,10 @@ public class TicketsController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public String deleteTicket(@PathVariable String id) {
     return service.deleteTicket(id);
+  }
+
+  @PutMapping("/{id}")
+  public Ticket updateTicket(@RequestBody @Valid Ticket newTicket, @PathVariable String id) {
+    return service.updateTicket(newTicket, id);
   }
 }

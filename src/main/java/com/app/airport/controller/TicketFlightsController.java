@@ -6,13 +6,14 @@ import java.util.List;
 
 import com.app.airport.entity.TicketFlight;
 import com.app.airport.service.TicketFlightsService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,11 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 /** REST controller for ticket flights repo. */
 @Slf4j
 @RestController
-@RequestMapping(value = "/tflights", produces="application/json")
-@AllArgsConstructor
+@RequestMapping(value = "/tflights", produces = "application/json")
 public class TicketFlightsController {
 
   private final TicketFlightsService service;
+
+  @Autowired
+  public TicketFlightsController(TicketFlightsService service) {
+    this.service = service;
+  }
 
   @GetMapping
   public List<TicketFlight> findAllTicketFlights() {
@@ -49,7 +54,8 @@ public class TicketFlightsController {
   }
 
   @GetMapping("/amount")
-  public List<TicketFlight> findAllByAmountBetween(@RequestParam BigDecimal minAmount, @RequestParam BigDecimal maxAmount) {
+  public List<TicketFlight> findAllByAmountBetween(
+      @RequestParam BigDecimal minAmount, @RequestParam BigDecimal maxAmount) {
     return service.findAllByAmountBetween(minAmount, maxAmount);
   }
 
@@ -68,5 +74,11 @@ public class TicketFlightsController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public String deleteAircraft(@PathVariable String id) {
     return service.deleteTicketFLightById(id);
+  }
+
+  @PutMapping("/{id}")
+  public TicketFlight updateTicketFlight(
+      @RequestBody @Valid TicketFlight newTicketFlight, @PathVariable String id) {
+    return service.updateTicketFlight(newTicketFlight, id);
   }
 }
