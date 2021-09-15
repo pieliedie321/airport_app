@@ -1,5 +1,6 @@
 package com.app.airport.service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -39,5 +40,23 @@ public class BoardingPassesService {
     log.debug("Deleting booking for ticketNo: " + ticketNo);
     repository.deleteById(ticketNo);
     return DELETED;
+  }
+
+  @Transactional(value = Transactional.TxType.REQUIRED)
+  public BoardPass updateBoardPass(BoardPass newBoardPass, String id) {
+    return repository
+        .findById(id)
+        .map(
+            boardPass -> {
+              boardPass.setTicketNo(id);
+              boardPass.setFlight(newBoardPass.getFlight());
+              boardPass.setBoardingNo(newBoardPass.getBoardingNo());
+              boardPass.setSeatNo(newBoardPass.getSeatNo());
+              return repository.save(boardPass);
+            })
+        .orElseThrow(
+            () ->
+                new EntityNotFoundException(
+                    "Cannot find entity \"BoardingPass\" to update, with id: " + id));
   }
 }
