@@ -1,5 +1,6 @@
 package com.app.airport.controller;
 
+import com.app.airport.controller.other.BoardingPassesController;
 import com.app.airport.service.BoardingPassesService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

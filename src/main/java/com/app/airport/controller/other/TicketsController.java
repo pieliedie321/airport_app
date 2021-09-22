@@ -1,4 +1,4 @@
-package com.app.airport.controller;
+package com.app.airport.controller.other;
 
 import javax.validation.Valid;
 import java.util.List;
