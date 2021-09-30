@@ -1,8 +1,6 @@
 package com.app.airport.dto;
 
 import java.math.BigDecimal;
-import java.util.List;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,9 +8,9 @@ import lombok.Data;
 @Builder
 public class TicketFlightDto {
 
-  private List<TicketDto> tickets;
+  private TicketDto ticket;
 
-  private List<BoardPassDto> boardPasses;
+  private BoardPassDto boardPass;
 
   private Integer flightId;
 

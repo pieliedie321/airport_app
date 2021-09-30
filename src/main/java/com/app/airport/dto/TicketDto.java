@@ -1,7 +1,5 @@
 package com.app.airport.dto;
 
-import java.util.List;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +7,7 @@ import lombok.Data;
 @Builder
 public class TicketDto {
 
-  private List<BookingDto> bookings;
+  private BookingDto booking;
 
   private String ticketNo;
 

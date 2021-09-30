@@ -3,8 +3,8 @@ package com.app.airport.controller.other;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
-
 import com.app.airport.entity.TicketFlight;
+import com.app.airport.entity.composite.CompositeId;
 import com.app.airport.service.TicketFlightsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +53,15 @@ public class TicketFlightsController {
     return service.findAllByAmount(amount);
   }
 
-  @GetMapping("/amount")
+  @GetMapping("/amount_between/")
   public List<TicketFlight> findAllByAmountBetween(
       @RequestParam BigDecimal minAmount, @RequestParam BigDecimal maxAmount) {
     return service.findAllByAmountBetween(minAmount, maxAmount);
   }
 
-  @GetMapping("/{number}")
-  public TicketFlight findTicketFlightByTicketNo(@PathVariable String number) {
-    return service.findTicketFlightByTicketNo(number);
+  @GetMapping("/id")
+  public TicketFlight findTicketFlightById(@RequestBody @Valid CompositeId id) {
+    return service.findTicketFlightById(id);
   }
 
   @PostMapping
@@ -70,15 +70,15 @@ public class TicketFlightsController {
     return service.saveNewTicketFlight(ticketFlight);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/id")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public String deleteAircraft(@PathVariable String id) {
+  public String deleteAircraft(@RequestBody @Valid CompositeId id) {
     return service.deleteTicketFLightById(id);
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/id")
   public TicketFlight updateTicketFlight(
-      @RequestBody @Valid TicketFlight newTicketFlight, @PathVariable String id) {
+      @RequestBody @Valid TicketFlight newTicketFlight, @RequestBody @Valid CompositeId id) {
     return service.updateTicketFlight(newTicketFlight, id);
   }
 }

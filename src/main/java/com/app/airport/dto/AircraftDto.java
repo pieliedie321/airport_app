@@ -1,8 +1,6 @@
 package com.app.airport.dto;
 
 import java.util.List;
-
-import com.app.airport.entity.Seat;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,5 +14,5 @@ public class AircraftDto {
 
   private Integer range;
 
-  private List<Seat> seats;
+  private List<SeatDto> seats;
 }

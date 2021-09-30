@@ -2,9 +2,9 @@ package com.app.airport.repository;
 
 import java.util.Date;
 import java.util.List;
-
 import com.app.airport.entity.Flight;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -21,4 +21,9 @@ public interface FlightsRepository extends JpaRepository<Flight, Integer> {
   List<Flight> findFlightsByDepartureAirport(String airport);
 
   List<Flight> findFlightsByArrivalAirportAndDepartureAirport(String arrivalAirport, String departureAirport);
+
+  @Query(value = "SELECT * FROM bookings.flights f ORDER BY f.scheduled_arrival LIMIT 10", nativeQuery = true)
+  List<Flight> findFlightsForDto();
+
+
 }

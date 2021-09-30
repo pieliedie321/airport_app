@@ -2,7 +2,6 @@ package com.app.airport.controller.other;
 
 import javax.validation.Valid;
 import java.util.List;
-
 import com.app.airport.entity.Seat;
 import com.app.airport.service.SeatsService;
 import lombok.extern.slf4j.Slf4j;
