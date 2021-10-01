@@ -21,4 +21,5 @@ spring:
     database: POSTGRESQL
     properties:
       hibernate:
+        enable_lazy_load_no_trans: true
         default_schema: bookings

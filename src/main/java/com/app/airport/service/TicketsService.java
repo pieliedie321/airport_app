@@ -3,23 +3,33 @@ package com.app.airport.service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
-
+import com.app.airport.dto.BookingDto;
+import com.app.airport.dto.TicketDto;
 import com.app.airport.entity.Ticket;
 import com.app.airport.repository.TicketsRepository;
-import lombok.AllArgsConstructor;
+import com.app.airport.utils.mapper.TicketsMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /** Service for ticktes repo. */
 @Slf4j
 @Service
-@AllArgsConstructor
 @Transactional(value = Transactional.TxType.SUPPORTS)
 public class TicketsService {
 
   private final TicketsRepository repository;
-
+  private final TicketsMapper mapper;
+  private final BookingsService bookingsService;
   private final String DELETED = "Ticket was deleted, with id: ";
+
+  @Autowired
+  public TicketsService(
+      TicketsRepository repository, TicketsMapper mapper, BookingsService bookingsService) {
+    this.repository = repository;
+    this.mapper = mapper;
+    this.bookingsService = bookingsService;
+  }
 
   public List<Ticket> findAllTickets() {
     return repository.findAll();
@@ -71,5 +81,14 @@ public class TicketsService {
             () ->
                 new EntityNotFoundException(
                     "Cannot find entity \"Ticket\" to update, with id: " + id));
+  }
+
+  public TicketDto constructTicketDtoFromEntity(String ticketNo) {
+    Ticket ticketEntity = findTicket(ticketNo);
+    return mapper.mapEntityToDto(ticketEntity, getBookingDto(ticketEntity.getBookRef()));
+  }
+
+  private BookingDto getBookingDto(String bookRef) {
+    return bookingsService.constructBookingDtoFromEntity(bookRef);
   }
 }

@@ -1,9 +1,8 @@
-package com.app.airport.controller;
+package com.app.airport.controller.other;
 
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
-
 import com.app.airport.entity.Flight;
 import com.app.airport.service.FlightsService;
 import lombok.extern.slf4j.Slf4j;

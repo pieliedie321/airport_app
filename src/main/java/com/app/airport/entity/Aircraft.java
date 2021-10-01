@@ -9,8 +9,8 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
-@Entity
 @Data
+@Entity
 @Table(name = "aircrafts")
 public class Aircraft {
 
