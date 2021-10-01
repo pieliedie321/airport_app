@@ -5,6 +5,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import com.app.airport.dto.BoardPassDto;
 import com.app.airport.dto.TicketDto;
 import com.app.airport.dto.TicketFlightDto;
@@ -16,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/** Service for ticket flights repo. */
+/** Service for ticketFlights repo and mapping. */
 @Slf4j
 @Service
 @Transactional(value = Transactional.TxType.SUPPORTS)
@@ -40,33 +41,42 @@ public class TicketFlightsService {
     this.ticketsService = ticketsService;
   }
 
-  public List<TicketFlight> findAllTicketFlights() {
-    return repository.findAll();
+  public List<TicketFlightDto> findAllTicketFlights() {
+    return mapTicketFlightDtosFromEntities(repository.findAll());
   }
 
-  public TicketFlight findTicketFlightById(CompositeId id) {
-    return repository.findById(id).orElse(null);
+  public TicketFlightDto findTicketFlightById(CompositeId id) {
+    return mapTicketFlightDtoFromEntity(
+        repository
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        String.format(
+                            "Cannot find ticketFlight with id: : ticketNo - %s, flightId - %s",
+                            id.getTicketNo(), id.getFlightId()))));
   }
 
-  public List<TicketFlight> findAllByFlightId(Integer id) {
-    return repository.findTicketFlightsByFlightId(id);
+  public List<TicketFlightDto> findAllByFlightId(Integer id) {
+    return mapTicketFlightDtosFromEntities(repository.findTicketFlightsByFlightId(id));
   }
 
-  public List<TicketFlight> findAllByFareConditions(String condition) {
-    return repository.findTicketFlightsByFareConditions(condition);
+  public List<TicketFlightDto> findAllByFareConditions(String condition) {
+    return mapTicketFlightDtosFromEntities(repository.findTicketFlightsByFareConditions(condition));
   }
 
-  public List<TicketFlight> findAllByAmount(BigDecimal amount) {
-    return repository.findTicketFlightsByAmount(amount);
+  public List<TicketFlightDto> findAllByAmount(BigDecimal amount) {
+    return mapTicketFlightDtosFromEntities(repository.findTicketFlightsByAmount(amount));
   }
 
-  public List<TicketFlight> findAllByAmountBetween(BigDecimal minAmount, BigDecimal maxAmount) {
-    return repository.findTicketFlightsByAmountBetween(minAmount, maxAmount);
+  public List<TicketFlightDto> findAllByAmountBetween(BigDecimal minAmount, BigDecimal maxAmount) {
+    return mapTicketFlightDtosFromEntities(
+        repository.findTicketFlightsByAmountBetween(minAmount, maxAmount));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public TicketFlight saveNewTicketFlight(TicketFlight ticketFlight) {
-    log.debug("Saving new ticket flight with no: " + ticketFlight.getTicketNo());
+    log.debug("Saving new ticketFlight with no: " + ticketFlight.getTicketNo());
     return repository.save(ticketFlight);
   }
 
@@ -74,7 +84,7 @@ public class TicketFlightsService {
   public String deleteTicketFLightById(CompositeId id) {
     log.debug(
         String.format(
-            "Deleting ticket flight with id: : ticketNo - %s, flightId - %s",
+            "Deleting ticketFlight with id: : ticketNo - %s, flightId - %s",
             id.getTicketNo(), id.getFlightId()));
     repository.deleteById(id);
     return DELETED;
@@ -100,22 +110,30 @@ public class TicketFlightsService {
                         id.getTicketNo(), id.getFlightId())));
   }
 
-  public List<TicketFlightDto> constructTicketFlightDtosFromEntities(Integer flightId) {
-    return findAllByFlightId(flightId).stream()
+  private List<TicketFlightDto> mapTicketFlightDtosFromEntities(List<TicketFlight> ticketFlights) {
+    return ticketFlights.stream()
         .map(
-            entity ->
+            ticketFlight ->
                 mapper.mapEntityToDto(
-                    entity,
-                    getTicketDto(entity.getTicketNo()),
-                    getBoardPassDto(new CompositeId(entity.getTicketNo(), entity.getFlightId()))))
+                    ticketFlight,
+                    getTicketDto(ticketFlight.getTicketNo()),
+                    getBoardPassDto(
+                        new CompositeId(ticketFlight.getTicketNo(), ticketFlight.getFlightId()))))
         .collect(Collectors.toList());
   }
 
+  private TicketFlightDto mapTicketFlightDtoFromEntity(TicketFlight ticketFlight) {
+    return mapper.mapEntityToDto(
+        ticketFlight,
+        getTicketDto(ticketFlight.getTicketNo()),
+        getBoardPassDto(new CompositeId(ticketFlight.getTicketNo(), ticketFlight.getFlightId())));
+  }
+
   private TicketDto getTicketDto(String ticketNo) {
-    return ticketsService.constructTicketDtoFromEntity(ticketNo);
+    return ticketsService.findTicket(ticketNo);
   }
 
   private BoardPassDto getBoardPassDto(CompositeId id) {
-    return boardingPassesService.constructBoardPassDtoFromEntity(id);
+    return boardingPassesService.findBoardingPassById(id);
   }
 }

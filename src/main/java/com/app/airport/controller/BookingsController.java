@@ -1,7 +1,8 @@
-package com.app.airport.controller.other;
+package com.app.airport.controller;
 
 import javax.validation.Valid;
 import java.util.List;
+import com.app.airport.dto.BookingDto;
 import com.app.airport.entity.Booking;
 import com.app.airport.service.BookingsService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +32,12 @@ public class BookingsController {
   }
 
   @GetMapping
-  public List<Booking> getAllBookings() {
+  public List<BookingDto> getAllBookings() {
     return service.findAllBookings();
   }
 
   @GetMapping("/id/{id}")
-  public Booking getBookingById(@PathVariable String id) {
+  public BookingDto getBookingById(@PathVariable String id) {
     return service.findBookingById(id);
   }
 

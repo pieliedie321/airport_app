@@ -3,6 +3,8 @@ package com.app.airport.service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.app.airport.dto.BookingDto;
 import com.app.airport.dto.TicketDto;
 import com.app.airport.entity.Ticket;
@@ -12,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/** Service for ticktes repo. */
+/** Service for ticktes repo and mapping. */
 @Slf4j
 @Service
 @Transactional(value = Transactional.TxType.SUPPORTS)
@@ -25,30 +27,36 @@ public class TicketsService {
 
   @Autowired
   public TicketsService(
-      TicketsRepository repository, TicketsMapper mapper, BookingsService bookingsService) {
+      TicketsRepository repository,
+      TicketsMapper mapper,
+      BookingsService bookingsService) {
     this.repository = repository;
     this.mapper = mapper;
     this.bookingsService = bookingsService;
   }
 
-  public List<Ticket> findAllTickets() {
-    return repository.findAll();
+  public List<TicketDto> findAllTickets() {
+    return mapTicketDtosFromEntities(repository.findAll());
   }
 
-  public List<Ticket> findTicketsByBookRef(String bookRef) {
-    return repository.findTicketsByBookRef(bookRef);
+  public List<TicketDto> findTicketsByBookRef(String bookRef) {
+    return mapTicketDtosFromEntities(repository.findTicketsByBookRef(bookRef));
   }
 
-  public List<Ticket> findTicketsByPassengerId(String passengerId) {
-    return repository.findTicketsByPassengerId(passengerId);
+  public List<TicketDto> findTicketsByPassengerId(String passengerId) {
+    return mapTicketDtosFromEntities(repository.findTicketsByPassengerId(passengerId));
   }
 
-  public List<Ticket> findTicketsByPassengerName(String passengerName) {
-    return repository.findTicketsByPassengerName(passengerName);
+  public List<TicketDto> findTicketsByPassengerName(String passengerName) {
+    return mapTicketDtosFromEntities(repository.findTicketsByPassengerName(passengerName));
   }
 
-  public Ticket findTicket(String ticketNo) {
-    return repository.findById(ticketNo).orElse(null);
+  public TicketDto findTicket(String ticketNo) {
+    return mapTicketDtoFromEntity(
+        repository
+            .findById(ticketNo)
+            .orElseThrow(
+                () -> new EntityNotFoundException("Cannot find ticket with id: " + ticketNo)));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
@@ -83,12 +91,17 @@ public class TicketsService {
                     "Cannot find entity \"Ticket\" to update, with id: " + id));
   }
 
-  public TicketDto constructTicketDtoFromEntity(String ticketNo) {
-    Ticket ticketEntity = findTicket(ticketNo);
-    return mapper.mapEntityToDto(ticketEntity, getBookingDto(ticketEntity.getBookRef()));
+  private List<TicketDto> mapTicketDtosFromEntities(List<Ticket> tickets) {
+    return tickets.stream()
+        .map(ticket -> mapper.mapEntityToDto(ticket, getBookingDto(ticket.getBookRef())))
+        .collect(Collectors.toList());
+  }
+
+  private TicketDto mapTicketDtoFromEntity(Ticket ticket) {
+    return mapper.mapEntityToDto(ticket, getBookingDto(ticket.getBookRef()));
   }
 
   private BookingDto getBookingDto(String bookRef) {
-    return bookingsService.constructBookingDtoFromEntity(bookRef);
+    return bookingsService.findBookingById(bookRef);
   }
 }

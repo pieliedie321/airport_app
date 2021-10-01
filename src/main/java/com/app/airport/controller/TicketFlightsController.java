@@ -1,8 +1,10 @@
-package com.app.airport.controller.other;
+package com.app.airport.controller;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.app.airport.dto.TicketFlightDto;
 import com.app.airport.entity.TicketFlight;
 import com.app.airport.entity.composite.CompositeId;
 import com.app.airport.service.TicketFlightsService;
@@ -34,33 +36,33 @@ public class TicketFlightsController {
   }
 
   @GetMapping
-  public List<TicketFlight> findAllTicketFlights() {
+  public List<TicketFlightDto> findAllTicketFlights() {
     return service.findAllTicketFlights();
   }
 
   @GetMapping("/flights/{id}")
-  public List<TicketFlight> findAllByFlightId(@PathVariable Integer id) {
+  public List<TicketFlightDto> findAllByFlightId(@PathVariable Integer id) {
     return service.findAllByFlightId(id);
   }
 
   @GetMapping("/conditions/{condition}")
-  public List<TicketFlight> findAllByFareConditions(@PathVariable String condition) {
+  public List<TicketFlightDto> findAllByFareConditions(@PathVariable String condition) {
     return service.findAllByFareConditions(condition);
   }
 
   @GetMapping("/amount/{amount}")
-  public List<TicketFlight> findAllByAmount(@PathVariable BigDecimal amount) {
+  public List<TicketFlightDto> findAllByAmount(@PathVariable BigDecimal amount) {
     return service.findAllByAmount(amount);
   }
 
   @GetMapping("/amount_between/")
-  public List<TicketFlight> findAllByAmountBetween(
+  public List<TicketFlightDto> findAllByAmountBetween(
       @RequestParam BigDecimal minAmount, @RequestParam BigDecimal maxAmount) {
     return service.findAllByAmountBetween(minAmount, maxAmount);
   }
 
   @GetMapping("/id")
-  public TicketFlight findTicketFlightById(@RequestBody @Valid CompositeId id) {
+  public TicketFlightDto findTicketFlightById(@RequestBody @Valid CompositeId id) {
     return service.findTicketFlightById(id);
   }
 

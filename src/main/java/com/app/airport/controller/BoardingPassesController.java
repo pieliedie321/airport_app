@@ -1,7 +1,8 @@
-package com.app.airport.controller.other;
+package com.app.airport.controller;
 
 import javax.validation.Valid;
 import java.util.List;
+import com.app.airport.dto.BoardPassDto;
 import com.app.airport.entity.BoardPass;
 import com.app.airport.entity.composite.CompositeId;
 import com.app.airport.service.BoardingPassesService;
@@ -31,12 +32,12 @@ public class BoardingPassesController {
   }
 
   @GetMapping
-  public List<BoardPass> getAllBookings() {
+  public List<BoardPassDto> getAllBookings() {
     return service.findAllBoardingPasses();
   }
 
   @GetMapping("/id/{compositeId}")
-  public BoardPass getBookingById(@RequestBody CompositeId compositeId) {
+  public BoardPassDto getBookingById(@RequestBody CompositeId compositeId) {
     return service.findBoardingPassById(compositeId);
   }
 

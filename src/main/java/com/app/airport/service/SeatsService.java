@@ -4,6 +4,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import com.app.airport.dto.SeatDto;
 import com.app.airport.entity.Seat;
 import com.app.airport.repository.SeatsRepository;
@@ -12,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/** Service for seats repo. */
+/** Service for seats repo and mapping and mapping. */
 @Slf4j
 @Service
 @Transactional(value = Transactional.TxType.SUPPORTS)
@@ -28,20 +29,23 @@ public class SeatsService {
     this.mapper = mapper;
   }
 
-  public List<Seat> findAllSeats() {
-    return repository.findAll();
+  public List<SeatDto> findAllSeats() {
+    return mapSeatDtosFromEntities(repository.findAll());
   }
 
-  public Seat findSeatById(String id) {
-    return repository.findById(id).orElse(null);
+  public SeatDto findSeatById(String id) {
+    return mapSeatDtoFromEntity(
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Cannot find seat with id: " + id)));
   }
 
-  public List<Seat> findSeatsByAircraftCode(String code) {
-    return repository.findSeatsByAircraftCode(code);
+  public List<SeatDto> findSeatsByAircraftCode(String code) {
+    return mapSeatDtosFromEntities(repository.findSeatsByAircraftCode(code));
   }
 
-  public List<Seat> findSeatsByFareConditions(String condition) {
-    return repository.findSeatsByFareConditions(condition);
+  public List<SeatDto> findSeatsByFareConditions(String condition) {
+    return mapSeatDtosFromEntities(repository.findSeatsByFareConditions(condition));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
@@ -74,8 +78,11 @@ public class SeatsService {
                     "Cannot find entity \"Seat\" to update, with id: " + id));
   }
 
-  public List<SeatDto> constructSeatDtos(String aircraftCode) {
-    List<Seat> seatEntities = findSeatsByAircraftCode(aircraftCode);
-    return seatEntities.stream().map(mapper::mapEntityToDto).collect(Collectors.toList());
+  private List<SeatDto> mapSeatDtosFromEntities(List<Seat> seats) {
+    return seats.stream().map(mapper::mapEntityToDto).collect(Collectors.toList());
+  }
+
+  private SeatDto mapSeatDtoFromEntity(Seat seat) {
+    return mapper.mapEntityToDto(seat);
   }
 }

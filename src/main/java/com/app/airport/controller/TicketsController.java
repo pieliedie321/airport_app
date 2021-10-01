@@ -1,7 +1,9 @@
-package com.app.airport.controller.other;
+package com.app.airport.controller;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import com.app.airport.dto.TicketDto;
 import com.app.airport.entity.Ticket;
 import com.app.airport.service.TicketsService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,27 +33,27 @@ public class TicketsController {
   }
 
   @GetMapping
-  public List<Ticket> findAllTickets() {
+  public List<TicketDto> findAllTickets() {
     return service.findAllTickets();
   }
 
   @GetMapping("/{bookRef}")
-  public List<Ticket> findTicketsByBookRef(@PathVariable String bookRef) {
+  public List<TicketDto> findTicketsByBookRef(@PathVariable String bookRef) {
     return service.findTicketsByBookRef(bookRef);
   }
 
   @GetMapping("/passengers/id/{passengerId}")
-  public List<Ticket> findTicketsByPassengerId(@PathVariable String passengerId) {
+  public List<TicketDto> findTicketsByPassengerId(@PathVariable String passengerId) {
     return service.findTicketsByPassengerId(passengerId);
   }
 
   @GetMapping("/passengers/names/{passengerName}")
-  public List<Ticket> findTicketsByPassengerName(@PathVariable String passengerName) {
+  public List<TicketDto> findTicketsByPassengerName(@PathVariable String passengerName) {
     return service.findTicketsByPassengerName(passengerName);
   }
 
   @GetMapping("/numbers/{number}")
-  public Ticket findTicket(String number) {
+  public TicketDto findTicket(String number) {
     return service.findTicket(number);
   }
 

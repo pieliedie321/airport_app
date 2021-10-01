@@ -1,8 +1,9 @@
-package com.app.airport.controller.other;
+package com.app.airport.controller;
 
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
+import com.app.airport.dto.FlightDto;
 import com.app.airport.entity.Flight;
 import com.app.airport.service.FlightsService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,29 +34,29 @@ public class FlightsController {
   }
 
   @GetMapping
-  public List<Flight> getAllFlights(@RequestParam(required = false) String flightNo) {
+  public List<FlightDto> getAllFlights(@RequestParam(required = false) String flightNo) {
     return service.findFlights(flightNo);
   }
 
   @GetMapping("/airports")
-  public List<Flight> getFlightsByAirports(
+  public List<FlightDto> getFlightsByAirports(
       @RequestParam(required = false) String arrival,
       @RequestParam(required = false) String departure) {
     return service.getFlightsByAirport(arrival, departure);
   }
 
   @GetMapping("/status/{status}")
-  public List<Flight> getFlightsByStatus(@PathVariable String status) {
+  public List<FlightDto> getFlightsByStatus(@PathVariable String status) {
     return service.findFlightsByStatus(status);
   }
 
   @GetMapping("/departures/{date}")
-  public List<Flight> getFlightsByStatus(@PathVariable Date date) {
+  public List<FlightDto> getFlightsByStatus(@PathVariable Date date) {
     return service.findFlightsByDepartureDate(date);
   }
 
   @GetMapping("/id/{id}")
-  public Flight getFlightById(@PathVariable Integer id) {
+  public FlightDto getFlightById(@PathVariable Integer id) {
     return service.getFlightById(id);
   }
 

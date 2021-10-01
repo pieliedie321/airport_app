@@ -1,7 +1,9 @@
-package com.app.airport.controller.other;
+package com.app.airport.controller;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import com.app.airport.dto.SeatDto;
 import com.app.airport.entity.Seat;
 import com.app.airport.service.SeatsService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,22 +33,22 @@ public class SeatsController {
   }
 
   @GetMapping
-  public List<Seat> findAllSeats() {
+  public List<SeatDto> findAllSeats() {
     return service.findAllSeats();
   }
 
   @GetMapping("/aircrafts/{code}")
-  public List<Seat> findSeatsByAircraftCode(@PathVariable String code) {
+  public List<SeatDto> findSeatsByAircraftCode(@PathVariable String code) {
     return service.findSeatsByAircraftCode(code);
   }
 
   @GetMapping("/conditions/{condition}")
-  public List<Seat> findSeatsByFareConditions(@PathVariable String condition) {
+  public List<SeatDto> findSeatsByFareConditions(@PathVariable String condition) {
     return service.findSeatsByFareConditions(condition);
   }
 
   @GetMapping("/id/{id}")
-  public Seat findSeatById(@PathVariable String id) {
+  public SeatDto findSeatById(@PathVariable String id) {
     return service.findSeatById(id);
   }
 

@@ -3,6 +3,7 @@ package com.app.airport.service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import com.app.airport.dto.AircraftDto;
 import com.app.airport.dto.SeatDto;
 import com.app.airport.entity.Aircraft;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
-/** Service for aircrafts repo. */
+/** Service for aircrafts repo and mapping. */
 @Slf4j
 @Service
 @Transactional(value = Transactional.TxType.SUPPORTS)
@@ -33,20 +34,25 @@ public class AircraftsService {
     this.seatsService = seatsService;
   }
 
-  public List<Aircraft> findAircrafts(String model) {
-    return isNull(model) ? repository.findAll() : repository.findAircraftByModelContaining(model);
+  public List<AircraftDto> findAircrafts(String model) {
+    return isNull(model)
+        ? mapAirportDtosFromEntities(repository.findAll())
+        : mapAirportDtosFromEntities(repository.findAircraftByModelContaining(model));
   }
 
-  public List<Aircraft> findAircraftsByRangeGreaterThan(Integer range) {
-    return repository.findAircraftsByRangeGreaterThan(range);
+  public List<AircraftDto> findAircraftsByRangeGreaterThan(Integer range) {
+    return mapAirportDtosFromEntities(repository.findAircraftsByRangeGreaterThan(range));
   }
 
-  public List<Aircraft> findAircraftsByRangeLessThan(Integer range) {
-    return repository.findAircraftsByRangeLessThan(range);
+  public List<AircraftDto> findAircraftsByRangeLessThan(Integer range) {
+    return mapAirportDtosFromEntities(repository.findAircraftsByRangeLessThan(range));
   }
 
-  public Aircraft findAircraftById(String id) {
-    return repository.findById(id).orElse(null);
+  public AircraftDto findAircraftById(String id) {
+    return mapAirportDtoFromEntity(
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Cannot find aircraft with id: " + id)));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
@@ -83,17 +89,17 @@ public class AircraftsService {
                     "Cannot find entity \"Aircraft\" to update, with id: " + id));
   }
 
-  public AircraftDto constructAircraftDtoFromEntity(String aircraftCode) {
-    Aircraft aircraft =
-        repository
-            .findById(aircraftCode)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException("Can't find aircraft with code: " + aircraftCode));
-    return mapper.mapEntityToDto(aircraft, getSeatDtos(aircraftCode));
+  private List<AircraftDto> mapAirportDtosFromEntities(List<Aircraft> aircrafts) {
+    return aircrafts.stream()
+        .map(aircraft -> mapper.mapEntityToDto(aircraft, getSeatDtos(aircraft.getCode())))
+        .collect(Collectors.toList());
   }
 
-  public List<SeatDto> getSeatDtos(String aircraftCode) {
-    return seatsService.constructSeatDtos(aircraftCode);
+  private AircraftDto mapAirportDtoFromEntity(Aircraft aircraft) {
+    return mapper.mapEntityToDto(aircraft, getSeatDtos(aircraft.getCode()));
+  }
+
+  private List<SeatDto> getSeatDtos(String aircraftCode) {
+    return seatsService.findSeatsByAircraftCode(aircraftCode);
   }
 }

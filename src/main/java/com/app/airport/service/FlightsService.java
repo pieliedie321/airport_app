@@ -5,6 +5,7 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import com.app.airport.dto.AircraftDto;
 import com.app.airport.dto.AirportDto;
 import com.app.airport.dto.FlightDto;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
-/** Service for flights repo. */
+/** Service for flights repo and mapping. */
 @Slf4j
 @Service
 @Transactional(value = Transactional.TxType.SUPPORTS)
@@ -45,36 +46,40 @@ public class FlightsService {
     this.ticketFlightsService = ticketFlightsService;
   }
 
-  public List<Flight> findFlights(String flightNo) {
+  public List<FlightDto> findFlights(String flightNo) {
     return isNull(flightNo)
-        ? repository.findAll()
-        : repository.findFlightByFlightNoContaining(flightNo);
+        ? mapFlightsToDto(repository.findAll())
+        : mapFlightsToDto(repository.findFlightByFlightNoContaining(flightNo));
   }
 
-  public List<Flight> findFlightsByStatus(String status) {
-    return repository.findFlightsByStatus(status);
+  public List<FlightDto> findFlightsByStatus(String status) {
+    return mapFlightsToDto(repository.findFlightsByStatus(status));
   }
 
-  public List<Flight> findFlightsByDepartureDate(Date departureDate) {
-    return repository.findFlightsByScheduledDepartureBefore(departureDate);
+  public List<FlightDto> findFlightsByDepartureDate(Date departureDate) {
+    return mapFlightsToDto(repository.findFlightsByScheduledDepartureBefore(departureDate));
   }
 
-  public List<Flight> getFlightsByAirport(String arrival, String departure) {
+  public List<FlightDto> getFlightsByAirport(String arrival, String departure) {
     if (isNull(arrival) && isNull(departure)) {
       throw new IllegalArgumentException("Arrival and departure can't be combined null");
     } else {
       if (isNull(departure)) {
-        return repository.findFlightsByArrivalAirport(arrival);
+        return mapFlightsToDto(repository.findFlightsByArrivalAirport(arrival));
       } else if (isNull(arrival)) {
-        return repository.findFlightsByDepartureAirport(departure);
+        return mapFlightsToDto(repository.findFlightsByDepartureAirport(departure));
       } else {
-        return repository.findFlightsByArrivalAirportAndDepartureAirport(arrival, departure);
+        return mapFlightsToDto(
+            repository.findFlightsByArrivalAirportAndDepartureAirport(arrival, departure));
       }
     }
   }
 
-  public Flight getFlightById(Integer id) {
-    return repository.findById(id).orElse(null);
+  public FlightDto getFlightById(Integer id) {
+    return mapFlightToDto(
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Cannot find entity with id: " + id)));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
@@ -118,8 +123,13 @@ public class FlightsService {
                     "Cannot find entity \"Flight\" to update, with id: " + id));
   }
 
-  public List<FlightDto> constructFlightDtoFromEntities() {
-    return mapFlightsToDto(repository.findFlightsForDto());
+  private FlightDto mapFlightToDto(Flight flight) {
+    return mapper.mapEntityToDto(
+        flight,
+        getTicketFlightDtos(flight.getFlightId()),
+        getAircraftDto(flight.getAircraftCode()),
+        getAirportDto(flight.getDepartureAirport()),
+        getAirportDto(flight.getArrivalAirport()));
   }
 
   private List<FlightDto> mapFlightsToDto(List<Flight> flights) {
@@ -136,14 +146,14 @@ public class FlightsService {
   }
 
   private List<TicketFlightDto> getTicketFlightDtos(Integer flightId) {
-    return ticketFlightsService.constructTicketFlightDtosFromEntities(flightId);
+    return ticketFlightsService.findAllByFlightId(flightId);
   }
 
   private AircraftDto getAircraftDto(String aircraftCode) {
-    return aircraftsService.constructAircraftDtoFromEntity(aircraftCode);
+    return aircraftsService.findAircraftById(aircraftCode);
   }
 
   private AirportDto getAirportDto(String airportCode) {
-    return airportsService.constructAircportDtoFromEntity(airportCode);
+    return airportsService.findAirportById(airportCode);
   }
 }

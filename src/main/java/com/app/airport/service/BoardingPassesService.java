@@ -3,6 +3,8 @@ package com.app.airport.service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.app.airport.dto.BoardPassDto;
 import com.app.airport.entity.BoardPass;
 import com.app.airport.entity.composite.CompositeId;
@@ -12,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/** Service for boarding passes repo. */
+/** Service for boarding passes repo and mapping. */
 @Slf4j
 @Service
 @Transactional(value = Transactional.TxType.SUPPORTS)
@@ -23,17 +25,26 @@ public class BoardingPassesService {
   private final String DELETED = "Board pass deleted, for ticketNo: ";
 
   @Autowired
-  public BoardingPassesService(BoardingPassesRepository repository, BoardPassesMapper mapper) {
+  public BoardingPassesService(
+      BoardingPassesRepository repository, BoardPassesMapper mapper) {
     this.repository = repository;
     this.mapper = mapper;
   }
 
-  public List<BoardPass> findAllBoardingPasses() {
-    return repository.findAll();
+  public List<BoardPassDto> findAllBoardingPasses() {
+    return mapBoardPassDtosToEntities(repository.findAll());
   }
 
-  public BoardPass findBoardingPassById(CompositeId compositeIdid) {
-    return repository.getById(compositeIdid);
+  public BoardPassDto findBoardingPassById(CompositeId compositeIdid) {
+    return mapBoardPassDtoToEntity(
+        repository
+            .findById(compositeIdid)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        String.format(
+                            "Deleting boardingPass with id: : ticketNo - %s, flightId - %s",
+                            compositeIdid.getTicketNo(), compositeIdid.getFlightId()))));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
@@ -46,7 +57,7 @@ public class BoardingPassesService {
   public String deleteBoardingPass(CompositeId id) {
     log.debug(
         String.format(
-            "Deleting booking with id: : ticketNo - %s, flightId - %s",
+            "Deleting boardingPass with id: : ticketNo - %s, flightId - %s",
             id.getTicketNo(), id.getFlightId()));
     repository.deleteById(id);
     return DELETED;
@@ -72,7 +83,11 @@ public class BoardingPassesService {
                         id.getTicketNo(), id.getFlightId())));
   }
 
-  public BoardPassDto constructBoardPassDtoFromEntity(CompositeId id) {
-    return mapper.mapEntityToDto(findBoardingPassById(id));
+  private List<BoardPassDto> mapBoardPassDtosToEntities(List<BoardPass> boardPasses) {
+    return boardPasses.stream().map(mapper::mapEntityToDto).collect(Collectors.toList());
+  }
+
+  private BoardPassDto mapBoardPassDtoToEntity(BoardPass boardPass) {
+    return mapper.mapEntityToDto(boardPass);
   }
 }

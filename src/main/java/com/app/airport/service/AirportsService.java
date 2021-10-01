@@ -3,6 +3,7 @@ package com.app.airport.service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import com.app.airport.dto.AirportDto;
 import com.app.airport.entity.Airport;
 import com.app.airport.repository.AirportsRepository;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
-/** Service for airports repo. */
+/** Service for airports repo and mapping. */
 @Slf4j
 @Service
 @Transactional(value = Transactional.TxType.SUPPORTS)
@@ -29,22 +30,25 @@ public class AirportsService {
     this.mapper = mapper;
   }
 
-  public List<Airport> findAirports(String name) {
+  public List<AirportDto> findAirports(String name) {
     return isNull(name)
-        ? repository.findAll()
-        : repository.findAirportsByAirportNameContaining(name);
+        ? mapAirportDtosFromEntities(repository.findAll())
+        : mapAirportDtosFromEntities(repository.findAirportsByAirportNameContaining(name));
   }
 
-  public List<Airport> findAirportsByCity(String city) {
-    return repository.findAirportsByCityContaining(city);
+  public List<AirportDto> findAirportsByCity(String city) {
+    return mapAirportDtosFromEntities(repository.findAirportsByCityContaining(city));
   }
 
-  public List<Airport> findAirportsByTimezone(String timezone) {
-    return repository.findAirportsByTimezoneContaining(timezone);
+  public List<AirportDto> findAirportsByTimezone(String timezone) {
+    return mapAirportDtosFromEntities(repository.findAirportsByTimezoneContaining(timezone));
   }
 
-  public Airport findAirportById(String id) {
-    return repository.findById(id).orElse(null);
+  public AirportDto findAirportById(String id) {
+    return mapAirportDtoFromEntity(
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Cannot find airport with id: " + id)));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
@@ -84,7 +88,13 @@ public class AirportsService {
                     "Cannot find entity \"Airport\" to update, with id: " + id));
   }
 
-  public AirportDto constructAircportDtoFromEntity(String airportCode) {
-    return mapper.mapEntityToDto(findAirportById(airportCode));
+  private List<AirportDto> mapAirportDtosFromEntities(List<Airport> airports) {
+    return airports.stream()
+        .map(mapper::mapEntityToDto)
+        .collect(Collectors.toList());
+  }
+
+  private AirportDto mapAirportDtoFromEntity(Airport airport) {
+    return mapper.mapEntityToDto(airport);
   }
 }

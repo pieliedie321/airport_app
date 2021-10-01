@@ -1,7 +1,9 @@
-package com.app.airport.controller.other;
+package com.app.airport.controller;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import com.app.airport.dto.AirportDto;
 import com.app.airport.entity.Airport;
 import com.app.airport.service.AirportsService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,22 +34,22 @@ public class AirportsController {
   }
 
   @GetMapping
-  public List<Airport> getAllAirports(@RequestParam(required = false) String name) {
+  public List<AirportDto> getAllAirports(@RequestParam(required = false) String name) {
     return service.findAirports(name);
   }
 
   @GetMapping("/city/{city}")
-  public List<Airport> getAirportsByCity(@PathVariable String city) {
+  public List<AirportDto> getAirportsByCity(@PathVariable String city) {
     return service.findAirportsByCity(city);
   }
 
   @GetMapping("/timezone/{timezone}")
-  public List<Airport> getAirportsByTimezone(@PathVariable String timezone) {
+  public List<AirportDto> getAirportsByTimezone(@PathVariable String timezone) {
     return service.findAirportsByTimezone(timezone);
   }
 
   @GetMapping("/id/{id}")
-  public Airport getFlightById(@PathVariable String id) {
+  public AirportDto getFlightById(@PathVariable String id) {
     return service.findAirportById(id);
   }
 
