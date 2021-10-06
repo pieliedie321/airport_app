@@ -60,20 +60,20 @@ public class AircraftsController {
 
   @Operation(summary = "Find aircrafts with flight range less than in request")
   @ApiResponses(
-          value = {
-                  @ApiResponse(
-                          responseCode = "200",
-                          description = "Returns list of aircrafts",
-                          content = {
-                                  @Content(
-                                          mediaType = "application/json",
-                                          schema = @Schema(implementation = AircraftDto.class))
-                          }),
-                  @ApiResponse(
-                          responseCode = "404",
-                          description = "Aircrafts not found",
-                          content = @Content(mediaType = "application/json"))
-          })
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Returns list of aircrafts",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = AircraftDto.class))
+            }),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Aircrafts not found",
+            content = @Content(mediaType = "application/json"))
+      })
   @GetMapping("/range/less/{range}")
   public List<AircraftDto> getAircraftsWithRangeLess(@PathVariable Integer range) {
     return service.findAircraftsByRangeLessThan(range);
@@ -81,57 +81,90 @@ public class AircraftsController {
 
   @Operation(summary = "Find aircrafts with flight range greater than in request")
   @ApiResponses(
-          value = {
-                  @ApiResponse(
-                          responseCode = "200",
-                          description = "Returns list of aircrafts",
-                          content = {
-                                  @Content(
-                                          mediaType = "application/json",
-                                          schema = @Schema(implementation = AircraftDto.class))
-                          }),
-                  @ApiResponse(
-                          responseCode = "404",
-                          description = "Aircrafts not found",
-                          content = @Content(mediaType = "application/json"))
-          })
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Returns list of aircrafts",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = AircraftDto.class))
+            }),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Aircrafts not found",
+            content = @Content(mediaType = "application/json"))
+      })
   @GetMapping("/range/greater/{range}")
   public List<AircraftDto> getAircraftsWithRangeGreater(@PathVariable Integer range) {
     return service.findAircraftsByRangeGreaterThan(range);
   }
+
   @Operation(summary = "Find aircraft by id")
   @ApiResponses(
-          value = {
-                  @ApiResponse(
-                          responseCode = "200",
-                          description = "Returns aircraft",
-                          content = {
-                                  @Content(
-                                          mediaType = "application/json",
-                                          schema = @Schema(implementation = AircraftDto.class))
-                          }),
-                  @ApiResponse(
-                          responseCode = "404",
-                          description = "Aircrafts not found",
-                          content = @Content(mediaType = "application/json"))
-          })
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Returns aircraft",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = AircraftDto.class))
+            }),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Aircraft not found",
+            content = @Content(mediaType = "application/json"))
+      })
   @GetMapping("/id/{id}")
   public AircraftDto getAircraftById(@PathVariable String id) {
     return service.findAircraftById(id);
   }
 
+  @Operation(summary = "Save new aircraft in database")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Aircraft successfully saved",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = Aircraft.class))
+            }),
+        @ApiResponse(responseCode = "500", description = "Aircraft not saved")
+      })
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public Aircraft saveAircraft(@RequestBody @Valid Aircraft aircraft) {
     return service.saveNewAircraft(aircraft);
   }
 
+  @Operation(summary = "Delete existing aircraft from database")
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "204", description = "Aircraft successfully deleted"),
+        @ApiResponse(responseCode = "500", description = "Aircraft not deleted")
+      })
   @DeleteMapping("/{code}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public String deleteAircraft(@PathVariable String code) {
-    return service.deleteAircraft(code);
+  public void deleteAircraft(@PathVariable String code) {
+    service.deleteAircraft(code);
   }
 
+  @Operation(summary = "Update existing aircraft in database")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Aircraft successfully updated",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = Aircraft.class))
+            }),
+        @ApiResponse(responseCode = "500", description = "Aircraft not updated")
+      })
   @PutMapping("/{id}")
   public Aircraft updateAircraft(
       @RequestBody @Valid Aircraft newAircraft, @PathVariable String id) {

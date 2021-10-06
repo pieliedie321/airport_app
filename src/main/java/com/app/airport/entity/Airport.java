@@ -24,11 +24,8 @@ public class Airport {
   @Column(name = "city")
   private String city;
 
-  @Column(name = "longitude")
-  private Double longitude;
-
-  @Column(name = "latitude")
-  private Double latitude;
+  @Column(name = "coordinates", columnDefinition = "point")
+  private String coordinates;
 
   @Column(name = "timezone")
   private String timezone;

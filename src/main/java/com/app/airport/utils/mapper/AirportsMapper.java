@@ -12,8 +12,8 @@ public class AirportsMapper {
         .airportCode(airport.getAirportCode())
         .airportName(airport.getAirportName())
         .city(airport.getCity())
-        .longitude(airport.getLongitude())
-        .latitude(airport.getLatitude())
+        .longitude(airport.getCoordinates())
+        .latitude(airport.getCoordinates())
         .timezone(airport.getTimezone())
         .build();
   }

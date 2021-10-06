@@ -20,7 +20,7 @@ public class FlightsMapper {
     return FlightDto.builder()
         .id(flight.getFlightId())
         .number(flight.getFlightNo())
-        .ticketsFlights(ticketFlight)
+        .ticketFlights(ticketFlight)
         .status(flight.getStatus())
         .aircraft(aircraft)
         .scheduledDeparture(flight.getScheduledDeparture())

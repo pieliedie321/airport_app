@@ -77,8 +77,10 @@ public class AirportsService {
               airport.setAirportCode(id);
               airport.setAirportName(newAirport.getAirportName());
               airport.setCity(newAirport.getCity());
-              airport.setLongitude(newAirport.getLongitude());
-              airport.setLatitude(newAirport.getLatitude());
+              //TODO переделать данную логику!
+              //              airport.setCoordinates("(" + newAirport.getLongitude() + ", " +
+              // newAirport.getLatitude() + ")");
+              airport.setCoordinates(newAirport.getCoordinates());
               airport.setTimezone(newAirport.getTimezone());
               return repository.save(airport);
             })
