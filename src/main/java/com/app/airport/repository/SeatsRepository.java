@@ -9,6 +9,4 @@ import org.springframework.stereotype.Repository;
 public interface SeatsRepository extends JpaRepository<Seat, String> {
 
   List<Seat> findSeatsByAircraftCode(String code);
-
-  List<Seat> findSeatsByFareConditions(String condition);
 }

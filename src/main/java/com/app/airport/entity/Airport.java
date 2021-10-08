@@ -7,10 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "airports")
+@NoArgsConstructor
 public class Airport {
 
   @Id
@@ -24,11 +26,8 @@ public class Airport {
   @Column(name = "city")
   private String city;
 
-  @Column(name = "longitude")
-  private Double longitude;
-
-  @Column(name = "latitude")
-  private Double latitude;
+  @Column(name = "coordinates", columnDefinition = "point")
+  private String coordinates;
 
   @Column(name = "timezone")
   private String timezone;

@@ -8,11 +8,13 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import com.app.airport.entity.composite.CompositeId;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "ticket_flights")
 @IdClass(value = CompositeId.class)
+@NoArgsConstructor
 public class TicketFlight {
 
   @Id

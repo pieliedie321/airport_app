@@ -19,4 +19,13 @@ public class TicketFlightsMapper {
         .boardPass(boardPass)
         .build();
   }
+
+  public TicketFlight mapDtoToEntity(TicketFlightDto ticketFlightDto) {
+    TicketFlight ticketFlight = new TicketFlight();
+    ticketFlight.setTicketNo(ticketFlightDto.getTicket().getTicketNo());
+    ticketFlight.setFlightId(ticketFlightDto.getFlightId());
+    ticketFlight.setFareConditions(ticketFlightDto.getFareConditions());
+    ticketFlight.setAmount(ticketFlightDto.getAmount());
+    return ticketFlight;
+  }
 }

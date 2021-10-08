@@ -1,6 +1,6 @@
 package com.app.airport.service;
 
-import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/** Service for seats repo. */
+/** Service for seats repo and mapping and mapping. */
 @Slf4j
 @Service
 @Transactional(value = Transactional.TxType.SUPPORTS)
@@ -20,7 +20,6 @@ public class SeatsService {
 
   private final SeatsRepository repository;
   private final SeatsMapper mapper;
-  private final String DELETED = "Seat was deleted, with id: ";
 
   @Autowired
   public SeatsService(SeatsRepository repository, SeatsMapper mapper) {
@@ -28,54 +27,55 @@ public class SeatsService {
     this.mapper = mapper;
   }
 
-  public List<Seat> findAllSeats() {
-    return repository.findAll();
-  }
-
-  public Seat findSeatById(String id) {
-    return repository.findById(id).orElse(null);
-  }
-
-  public List<Seat> findSeatsByAircraftCode(String code) {
-    return repository.findSeatsByAircraftCode(code);
-  }
-
-  public List<Seat> findSeatsByFareConditions(String condition) {
-    return repository.findSeatsByFareConditions(condition);
+  public List<SeatDto> findSeatsByAircraftCode(String code) {
+    return mapSeatDtosFromEntities(repository.findSeatsByAircraftCode(code));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
-  public Seat saveNewSeat(Seat seat) {
+  public void saveSeats(List<SeatDto> seatDtos) {
+    for (SeatDto seatDto : seatDtos) {
+      saveNewSeat(mapSeatEntityFromDto(seatDto));
+    }
+  }
+
+  private void saveNewSeat(Seat seat) {
     log.debug("Saving new seat with no: " + seat.getSeatNo());
-    return repository.save(seat);
+    try {
+      repository.save(seat);
+    } catch (PersistenceException ex) {
+      log.error(
+          String.format("Can't save seat with id: %s, cause: ", seat.getSeatNo()) + ex.getCause());
+      throw ex;
+    }
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
-  public String deleteSeatById(String id) {
+  public void deleteAircraftSeats(String aircraftCode) {
+    List<Seat> seatsToDelete = mapSeatEntitiesFromDtos(findSeatsByAircraftCode(aircraftCode));
+    for (Seat seat : seatsToDelete) {
+      deleteSeatById(seat.getSeatNo());
+    }
+  }
+
+  private void deleteSeatById(String id) {
     log.debug("Deleting seat with no: " + id);
-    repository.deleteById(id);
-    return DELETED;
+    try {
+      repository.deleteById(id);
+    } catch (PersistenceException ex) {
+      log.error(String.format("Can't delete seat with id: %s, cause: ", id) + ex.getCause());
+      throw ex;
+    }
   }
 
-  @Transactional(value = Transactional.TxType.REQUIRED)
-  public Seat updateSeat(Seat newSeat, String id) {
-    return repository
-        .findById(id)
-        .map(
-            seat -> {
-              seat.setSeatNo(id);
-              seat.setAircraftCode(newSeat.getAircraftCode());
-              seat.setFareConditions(newSeat.getFareConditions());
-              return repository.save(seat);
-            })
-        .orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot find entity \"Seat\" to update, with id: " + id));
+  private List<SeatDto> mapSeatDtosFromEntities(List<Seat> seats) {
+    return seats.stream().map(mapper::mapEntityToDto).collect(Collectors.toList());
   }
 
-  public List<SeatDto> constructSeatDtos(String aircraftCode) {
-    List<Seat> seatEntities = findSeatsByAircraftCode(aircraftCode);
-    return seatEntities.stream().map(mapper::mapEntityToDto).collect(Collectors.toList());
+  private List<Seat> mapSeatEntitiesFromDtos(List<SeatDto> seatDtos) {
+    return seatDtos.stream().map(mapper::mapDtoToEntity).collect(Collectors.toList());
+  }
+
+  private Seat mapSeatEntityFromDto(SeatDto seatDto) {
+    return mapper.mapDtoToEntity(seatDto);
   }
 }
