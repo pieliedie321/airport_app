@@ -14,4 +14,12 @@ public class BookingsMapper {
         .totalAmount(booking.getTotalAmount())
         .build();
   }
+
+  public Booking mapDtoToEntity(BookingDto bookingDto) {
+    Booking booking = new Booking();
+    booking.setBookingRef(bookingDto.getBookingRef());
+    booking.setBookDate(bookingDto.getBookDate());
+    booking.setTotalAmount(bookingDto.getTotalAmount());
+    return booking;
+  }
 }

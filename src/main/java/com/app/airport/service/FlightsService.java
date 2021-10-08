@@ -1,11 +1,15 @@
 package com.app.airport.service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.app.airport.config.ResponseConfig;
 import com.app.airport.dto.AircraftDto;
 import com.app.airport.dto.AirportDto;
 import com.app.airport.dto.FlightDto;
@@ -30,26 +34,30 @@ public class FlightsService {
   private final AircraftsService aircraftsService;
   private final AirportsService airportsService;
   private final TicketFlightsService ticketFlightsService;
-  private final String DELETED = "Flight was deleted, with id: ";
+  private final ResponseConfig config;
 
   @Autowired
-  public FlightsService(
-      FlightsRepository repository,
-      FlightsMapper mapper,
-      AircraftsService aircraftsService,
-      AirportsService airportsService,
-      TicketFlightsService ticketFlightsService) {
+  public FlightsService(FlightsRepository repository, FlightsMapper mapper, AircraftsService aircraftsService, AirportsService airportsService, TicketFlightsService ticketFlightsService, ResponseConfig config) {
     this.repository = repository;
     this.mapper = mapper;
     this.aircraftsService = aircraftsService;
     this.airportsService = airportsService;
     this.ticketFlightsService = ticketFlightsService;
+    this.config = config;
   }
 
   public List<FlightDto> findFlights(String flightNo) {
     return isNull(flightNo)
-        ? mapFlightsToDto(repository.findAll())
+        ? mapFlightsToDto(repository.findAllFlightsLimit(config.getLimit()))
         : mapFlightsToDto(repository.findFlightByFlightNoContaining(flightNo));
+  }
+
+  public List<FlightDto> findLatestArrivalFlights() {
+    return mapFlightsToDto(repository.findAllFlightsOrderByArrivalDate(config.getLimit()));
+  }
+
+  public List<FlightDto> findLatestDepartureFlights() {
+    return mapFlightsToDto(repository.findAllFlightsOrderByDepartureDate(config.getLimit()));
   }
 
   public List<FlightDto> findFlightsByStatus(String status) {
@@ -75,7 +83,7 @@ public class FlightsService {
     }
   }
 
-  public FlightDto getFlightById(Integer id) {
+  public FlightDto getFlightById(@NotNull Integer id) {
     return mapFlightToDto(
         repository
             .findById(id)
@@ -83,44 +91,45 @@ public class FlightsService {
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
-  public Flight saveNewFlight(Flight flight) {
+  public void saveNewFlight(FlightDto flightDto) {
     log.debug(
-        "Saving new flight with id: "
-            + flight.getFlightId()
-            + ", and flightNo: "
-            + flight.getFlightNo());
-    return repository.save(flight);
+        String.format("Saving new flight with id: %d, cause: ", flightDto.getId()));
+    saveEntities(flightDto);
+  }
+
+  private void saveEntities(FlightDto flightDto) {
+    try {
+      repository.save(mapFlightEntityFromDto(flightDto));
+      ticketFlightsService.saveNewTicketFLights(flightDto.getTicketFlights());
+    } catch (PersistenceException ex) {
+      log.error("Can't save entity to database, cause" + ex.getCause());
+    }
+    mapFlightEntityFromDto(flightDto);
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
-  public String deleteFlightById(Integer id) {
+  public void deleteFlightById(Integer id) {
     log.debug("Deleting flight with id: " + id);
-    repository.deleteById(id);
-    return DELETED;
+    deleteFlight(id);
   }
 
-  @Transactional(value = Transactional.TxType.REQUIRED)
-  public Flight updateFlight(Flight newFLight, Integer id) {
-    return repository
-        .findById(id)
-        .map(
-            flight -> {
-              flight.setFlightId(id);
-              flight.setFlightNo(newFLight.getFlightNo());
-              flight.setScheduledDeparture(newFLight.getScheduledDeparture());
-              flight.setScheduledArrival(newFLight.getScheduledArrival());
-              flight.setDepartureAirport(newFLight.getDepartureAirport());
-              flight.setArrivalAirport(newFLight.getArrivalAirport());
-              flight.setStatus(newFLight.getStatus());
-              flight.setAircraftCode(newFLight.getAircraftCode());
-              flight.setActualArrival(newFLight.getActualArrival());
-              flight.setActualDeparture(newFLight.getActualDeparture());
-              return repository.save(flight);
-            })
-        .orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot find entity \"Flight\" to update, with id: " + id));
+  private void deleteFlight(Integer id) {
+    try{
+      repository.deleteById(id);
+    } catch (PersistenceException ex) {
+      log.error(String.format("can't delete flight with id: %d, cause: ", id), ex.getCause());
+    }
+  }
+
+  private void deleteEntities(FlightDto flightDto) {
+    try {
+      repository.delete(mapFlightEntityFromDto(flightDto));
+      if (!isNull(flightDto.getTicketFlights()) || !flightDto.getTicketFlights().isEmpty()) {
+        ticketFlightsService.deleteTicketFlights(flightDto.getTicketFlights());
+      }
+    } catch (PersistenceException ex) {
+      log.error("Can't delete flight with id: " + flightDto.getId(), ex.getCause());
+    }
   }
 
   private FlightDto mapFlightToDto(Flight flight) {
@@ -145,15 +154,31 @@ public class FlightsService {
         .collect(Collectors.toList());
   }
 
+  private Flight mapFlightEntityFromDto(FlightDto flightDto) {
+    return mapper.mapDtoToEntity(flightDto);
+  }
+
   private List<TicketFlightDto> getTicketFlightDtos(Integer flightId) {
     return ticketFlightsService.findAllByFlightId(flightId);
   }
 
   private AircraftDto getAircraftDto(String aircraftCode) {
-    return aircraftsService.findAircraftById(aircraftCode);
+    try{
+      return aircraftsService.findAircraftById(aircraftCode);
+    } catch (PersistenceException ex) {
+      log.error(
+              String.format("Can't find aircraft with code: %s, cause: ", aircraftCode), ex.getCause());
+      throw ex;
+    }
   }
 
   private AirportDto getAirportDto(String airportCode) {
-    return airportsService.findAirportById(airportCode);
+    try {
+      return airportsService.findAirportById(airportCode);
+    } catch (PersistenceException ex) {
+      log.error(
+          String.format("Can't find airport with code: %s, cause: ", airportCode), ex.getCause());
+      throw ex;
+    }
   }
 }

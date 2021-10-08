@@ -7,11 +7,13 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 import com.app.airport.entity.composite.CompositeId;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "boarding_passes")
 @IdClass(value = CompositeId.class)
+@NoArgsConstructor
 public class BoardPass {
 
   @Id

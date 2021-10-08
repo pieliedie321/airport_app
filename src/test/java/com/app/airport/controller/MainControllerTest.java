@@ -1,6 +1,6 @@
 package com.app.airport.controller;
 
-import com.app.airport.service.AirportsService;
+import com.app.airport.service.FlightsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,32 +16,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(AirportsController.class)
-public class AirportsControllerTest {
+@WebMvcTest(MainController.class)
+public class MainControllerTest {
 
-  @Autowired private AirportsController airportsController;
+  @Autowired private MainController mainController;
 
   @Autowired private MockMvc mockMvc;
 
-  @MockBean private AirportsService airportsService;
+  @MockBean private FlightsService flightsService;
 
   @Test
   public void controllerInitializedCorrectly() {
-    assertThat(airportsController).isNotNull();
+    assertThat(mainController).isNotNull();
   }
 
   @Test
-  public void testGetAirports() throws Exception {
+  public void testGetFlights() throws Exception {
     mockMvc
-        .perform(get("/airports"))
+        .perform(get("/flights"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
 
+//    @Test
+//    public void testGetFlightById() throws Exception {
+//      mockMvc
+//          .perform(get("/flights/id/1"))
+//          .andExpect(status().isOk())
+//          .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+//    }
+
   @Test
-  public void testGetAirportsByCity() throws Exception {
+  public void testGetFlightByStatus() throws Exception {
     mockMvc
-        .perform(get("/airports/city/Воронеж"))
+        .perform(get("/flights/status/Arrived"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
@@ -49,7 +57,7 @@ public class AirportsControllerTest {
   @Test
   public void testGetFlightsByAirport() throws Exception {
     mockMvc
-        .perform(get("/airports/timezone/Europe"))
+        .perform(get("/flights/airports?arrival=VOZ&departure=DME"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }

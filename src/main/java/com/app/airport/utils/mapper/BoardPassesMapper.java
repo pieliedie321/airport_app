@@ -15,4 +15,13 @@ public class BoardPassesMapper {
         .seatNo(boardPass.getSeatNo())
         .build();
   }
+
+  public BoardPass mapDtoToEntity(BoardPassDto boardPassDto) {
+    BoardPass boardPass = new BoardPass();
+    boardPass.setTicketNo(boardPassDto.getTicketNo());
+    boardPass.setFlightId(boardPassDto.getFlightId());
+    boardPass.setBoardingNo(boardPassDto.getBoardingNo());
+    boardPass.setSeatNo(boardPassDto.getSeatNo());
+    return boardPass;
+  }
 }

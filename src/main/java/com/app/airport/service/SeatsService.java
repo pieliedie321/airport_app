@@ -1,10 +1,9 @@
 package com.app.airport.service;
 
-import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.app.airport.dto.SeatDto;
 import com.app.airport.entity.Seat;
 import com.app.airport.repository.SeatsRepository;
@@ -21,7 +20,6 @@ public class SeatsService {
 
   private final SeatsRepository repository;
   private final SeatsMapper mapper;
-  private final String DELETED = "Seat was deleted, with id: ";
 
   @Autowired
   public SeatsService(SeatsRepository repository, SeatsMapper mapper) {
@@ -29,60 +27,55 @@ public class SeatsService {
     this.mapper = mapper;
   }
 
-  public List<SeatDto> findAllSeats() {
-    return mapSeatDtosFromEntities(repository.findAll());
-  }
-
-  public SeatDto findSeatById(String id) {
-    return mapSeatDtoFromEntity(
-        repository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Cannot find seat with id: " + id)));
-  }
-
   public List<SeatDto> findSeatsByAircraftCode(String code) {
     return mapSeatDtosFromEntities(repository.findSeatsByAircraftCode(code));
   }
 
-  public List<SeatDto> findSeatsByFareConditions(String condition) {
-    return mapSeatDtosFromEntities(repository.findSeatsByFareConditions(condition));
+  @Transactional(value = Transactional.TxType.REQUIRED)
+  public void saveSeats(List<SeatDto> seatDtos) {
+    for (SeatDto seatDto : seatDtos) {
+      saveNewSeat(mapSeatEntityFromDto(seatDto));
+    }
   }
 
-  @Transactional(value = Transactional.TxType.REQUIRED)
-  public Seat saveNewSeat(Seat seat) {
+  private void saveNewSeat(Seat seat) {
     log.debug("Saving new seat with no: " + seat.getSeatNo());
-    return repository.save(seat);
+    try {
+      repository.save(seat);
+    } catch (PersistenceException ex) {
+      log.error(
+          String.format("Can't save seat with id: %s, cause: ", seat.getSeatNo()) + ex.getCause());
+      throw ex;
+    }
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
-  public String deleteSeatById(String id) {
+  public void deleteAircraftSeats(String aircraftCode) {
+    List<Seat> seatsToDelete = mapSeatEntitiesFromDtos(findSeatsByAircraftCode(aircraftCode));
+    for (Seat seat : seatsToDelete) {
+      deleteSeatById(seat.getSeatNo());
+    }
+  }
+
+  private void deleteSeatById(String id) {
     log.debug("Deleting seat with no: " + id);
-    repository.deleteById(id);
-    return DELETED;
-  }
-
-  @Transactional(value = Transactional.TxType.REQUIRED)
-  public Seat updateSeat(Seat newSeat, String id) {
-    return repository
-        .findById(id)
-        .map(
-            seat -> {
-              seat.setSeatNo(id);
-              seat.setAircraftCode(newSeat.getAircraftCode());
-              seat.setFareConditions(newSeat.getFareConditions());
-              return repository.save(seat);
-            })
-        .orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot find entity \"Seat\" to update, with id: " + id));
+    try {
+      repository.deleteById(id);
+    } catch (PersistenceException ex) {
+      log.error(String.format("Can't delete seat with id: %s, cause: ", id) + ex.getCause());
+      throw ex;
+    }
   }
 
   private List<SeatDto> mapSeatDtosFromEntities(List<Seat> seats) {
     return seats.stream().map(mapper::mapEntityToDto).collect(Collectors.toList());
   }
 
-  private SeatDto mapSeatDtoFromEntity(Seat seat) {
-    return mapper.mapEntityToDto(seat);
+  private List<Seat> mapSeatEntitiesFromDtos(List<SeatDto> seatDtos) {
+    return seatDtos.stream().map(mapper::mapDtoToEntity).collect(Collectors.toList());
+  }
+
+  private Seat mapSeatEntityFromDto(SeatDto seatDto) {
+    return mapper.mapDtoToEntity(seatDto);
   }
 }

@@ -9,10 +9,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "flights")
+@NoArgsConstructor
 public class Flight {
 
   @Id

@@ -9,10 +9,12 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "bookings")
+@NoArgsConstructor
 public class Booking {
 
   @Id

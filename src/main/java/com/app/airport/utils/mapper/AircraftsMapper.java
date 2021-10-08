@@ -17,4 +17,12 @@ public class AircraftsMapper {
         .seats(seats)
         .build();
   }
+
+  public Aircraft mapDtoToEntity(AircraftDto aircraftDto) {
+    Aircraft aircraft = new Aircraft();
+    aircraft.setCode(aircraftDto.getCode());
+    aircraft.setModel(aircraftDto.getModel());
+    aircraft.setRange(aircraftDto.getRange());
+    return aircraft;
+  }
 }

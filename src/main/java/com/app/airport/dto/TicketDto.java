@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder
@@ -13,7 +15,7 @@ public class TicketDto {
 
   @Schema(name = "Booking", description = "Booking flight")
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private BookingDto booking;
+  private List<BookingDto> booking;
 
   @Schema(description = "Ticket number")
   @NotBlank(message = "Flight number can't be blank!")
@@ -33,7 +35,12 @@ public class TicketDto {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String passengerName;
 
-  @Schema(description = "Passenger contact data")
+  @Schema(description = "Passenger's phone number")
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private String contactData;
+  private String phoneNumber;
+
+  @Schema(description = "Passenger's email")
+  @Email
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String email;
 }

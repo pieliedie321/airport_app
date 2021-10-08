@@ -11,10 +11,4 @@ import org.springframework.stereotype.Repository;
 public interface TicketFlightsRepository extends JpaRepository<TicketFlight, CompositeId> {
 
   List<TicketFlight> findTicketFlightsByFlightId(Integer id);
-
-  List<TicketFlight> findTicketFlightsByFareConditions(String condition);
-
-  List<TicketFlight> findTicketFlightsByAmount(BigDecimal amount);
-
-  List<TicketFlight> findTicketFlightsByAmountBetween(BigDecimal minAmount, BigDecimal maxAmount);
 }

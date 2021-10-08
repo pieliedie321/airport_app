@@ -14,4 +14,12 @@ public class SeatsMapper {
         .fareConditions(seat.getFareConditions())
         .build();
   }
+
+  public Seat mapDtoToEntity(SeatDto seatDto) {
+    Seat seat = new Seat();
+    seat.setSeatNo(seatDto.getSeatNo());
+    seat.setAircraftCode(seatDto.getAircraftCode());
+    seat.setFareConditions(seatDto.getFareConditions());
+    return seat;
+  }
 }

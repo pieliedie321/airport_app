@@ -1,9 +1,12 @@
 package com.app.airport.service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.stream.Collectors;
 import com.app.airport.dto.AirportDto;
 import com.app.airport.entity.Airport;
 import com.app.airport.repository.AirportsRepository;
@@ -11,8 +14,6 @@ import com.app.airport.utils.mapper.AirportsMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static java.util.Objects.isNull;
 
 /** Service for airports repo and mapping. */
 @Slf4j
@@ -22,7 +23,6 @@ public class AirportsService {
 
   private final AirportsRepository repository;
   private final AirportsMapper mapper;
-  private final String DELETED = "Airport deleted, with code: ";
 
   @Autowired
   public AirportsService(AirportsRepository repository, AirportsMapper mapper) {
@@ -30,73 +30,43 @@ public class AirportsService {
     this.mapper = mapper;
   }
 
-  public List<AirportDto> findAirports(String name) {
-    return isNull(name)
-        ? mapAirportDtosFromEntities(repository.findAll())
-        : mapAirportDtosFromEntities(repository.findAirportsByAirportNameContaining(name));
-  }
-
-  public List<AirportDto> findAirportsByCity(String city) {
-    return mapAirportDtosFromEntities(repository.findAirportsByCityContaining(city));
-  }
-
-  public List<AirportDto> findAirportsByTimezone(String timezone) {
-    return mapAirportDtosFromEntities(repository.findAirportsByTimezoneContaining(timezone));
-  }
-
   public AirportDto findAirportById(String id) {
     return mapAirportDtoFromEntity(
         repository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Cannot find airport with id: " + id)));
+            .orElseThrow(() -> new PersistenceException("Cannot find airport with id: " + id)));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
-  public Airport saveNewAirport(Airport airport) {
+  public void saveNewAirport(@NotNull AirportDto airportDto) {
     log.debug(
-        "Saving new airport with code: "
-            + airport.getAirportCode()
-            + ", and name: "
-            + airport.getAirportName());
-    return repository.save(airport);
+        String.format(
+            "Saving new airport with code: %s, and name: %s",
+            airportDto.getAirportCode(), airportDto.getAirportName()));
+    try {
+      repository.save(mapAirportEntityFromDto(airportDto));
+    } catch (PersistenceException ex) {
+      log.error(
+          String.format("Can't save airport with code: %s, cause: ", airportDto.getAirportCode())
+              + ex.getCause());
+    }
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
-  public String deleteAircraft(String id) {
+  public void deleteAircraft(@NotNull @NotBlank String id) {
     log.debug("Deleting airport with id: " + id);
-    repository.deleteById(id);
-    return DELETED;
-  }
-
-  @Transactional(value = Transactional.TxType.REQUIRED)
-  public Airport updateAirport(Airport newAirport, String id) {
-    return repository
-        .findById(id)
-        .map(
-            airport -> {
-              airport.setAirportCode(id);
-              airport.setAirportName(newAirport.getAirportName());
-              airport.setCity(newAirport.getCity());
-              //TODO переделать данную логику!
-              //              airport.setCoordinates("(" + newAirport.getLongitude() + ", " +
-              // newAirport.getLatitude() + ")");
-              airport.setCoordinates(newAirport.getCoordinates());
-              airport.setTimezone(newAirport.getTimezone());
-              return repository.save(airport);
-            })
-        .orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot find entity \"Airport\" to update, with id: " + id));
-  }
-
-  private List<AirportDto> mapAirportDtosFromEntities(List<Airport> airports) {
-    return airports.stream()
-        .map(mapper::mapEntityToDto)
-        .collect(Collectors.toList());
+    try {
+      repository.deleteById(id);
+    } catch (PersistenceException ex) {
+      log.error(String.format("Can't delete airport with code: %s, cause: ", id) + ex.getCause());
+    }
   }
 
   private AirportDto mapAirportDtoFromEntity(Airport airport) {
     return mapper.mapEntityToDto(airport);
+  }
+
+  private Airport mapAirportEntityFromDto(AirportDto boardPassDto) {
+    return mapper.mapDtoToEntity(boardPassDto);
   }
 }
