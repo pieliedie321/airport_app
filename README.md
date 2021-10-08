@@ -10,4 +10,4 @@ Current features:
 3. Mapping entities from database to DTOs
 4. Checkstyle Google checks
 
-![logo](https://github.com/pieliedie321/[reponame]/blob/master/logo.png?raw=true)
+![logo](https://github.com/pieliedie321/airport_app/blob/master/logo.png?raw=true)
