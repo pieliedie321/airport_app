@@ -6,7 +6,7 @@ Data base [entities link!](https://postgrespro.ru/docs/postgrespro/10/apjs02.htm
 
 Current features:
 1. REST Api
-2. OpenApi swagger annotations
+2. OpenApi
 3. Mapping entities from database to DTOs
 4. Checkstyle Google checks
 
