@@ -1,14 +1,11 @@
 package com.app.airport.service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.app.airport.config.ResponseConfig;
 import com.app.airport.dto.AircraftDto;
 import com.app.airport.dto.AirportDto;
@@ -37,7 +34,13 @@ public class FlightsService {
   private final ResponseConfig config;
 
   @Autowired
-  public FlightsService(FlightsRepository repository, FlightsMapper mapper, AircraftsService aircraftsService, AirportsService airportsService, TicketFlightsService ticketFlightsService, ResponseConfig config) {
+  public FlightsService(
+      FlightsRepository repository,
+      FlightsMapper mapper,
+      AircraftsService aircraftsService,
+      AirportsService airportsService,
+      TicketFlightsService ticketFlightsService,
+      ResponseConfig config) {
     this.repository = repository;
     this.mapper = mapper;
     this.aircraftsService = aircraftsService;
@@ -92,43 +95,31 @@ public class FlightsService {
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void saveNewFlight(FlightDto flightDto) {
-    log.debug(
-        String.format("Saving new flight with id: %d, cause: ", flightDto.getId()));
     saveEntities(flightDto);
   }
 
   private void saveEntities(FlightDto flightDto) {
-    try {
-      repository.save(mapFlightEntityFromDto(flightDto));
-      ticketFlightsService.saveNewTicketFLights(flightDto.getTicketFlights());
-    } catch (PersistenceException ex) {
-      log.error("Can't save entity to database, cause" + ex.getCause());
-    }
-    mapFlightEntityFromDto(flightDto);
+    repository.save(mapFlightEntityFromDto(flightDto));
+    ticketFlightsService.saveNewTicketFLights(flightDto.getTicketFlights());
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
-  public void deleteFlightById(Integer id) {
-    log.debug("Deleting flight with id: " + id);
-    deleteFlight(id);
-  }
-
-  private void deleteFlight(Integer id) {
-    try{
-      repository.deleteById(id);
-    } catch (PersistenceException ex) {
-      log.error(String.format("can't delete flight with id: %d, cause: ", id), ex.getCause());
+  public void deleteFlight(Integer id, FlightDto flightDto) {
+    if (isNull(flightDto)) {
+      deleteFlightById(id);
+    } else {
+      deleteEntities(flightDto);
     }
   }
 
+  private void deleteFlightById(Integer id) {
+    repository.deleteById(id);
+  }
+
   private void deleteEntities(FlightDto flightDto) {
-    try {
-      repository.delete(mapFlightEntityFromDto(flightDto));
-      if (!isNull(flightDto.getTicketFlights()) || !flightDto.getTicketFlights().isEmpty()) {
-        ticketFlightsService.deleteTicketFlights(flightDto.getTicketFlights());
-      }
-    } catch (PersistenceException ex) {
-      log.error("Can't delete flight with id: " + flightDto.getId(), ex.getCause());
+    repository.delete(mapFlightEntityFromDto(flightDto));
+    if (!isNull(flightDto.getTicketFlights()) || !flightDto.getTicketFlights().isEmpty()) {
+      ticketFlightsService.deleteTicketFlights(flightDto.getTicketFlights());
     }
   }
 
@@ -163,22 +154,10 @@ public class FlightsService {
   }
 
   private AircraftDto getAircraftDto(String aircraftCode) {
-    try{
-      return aircraftsService.findAircraftById(aircraftCode);
-    } catch (PersistenceException ex) {
-      log.error(
-              String.format("Can't find aircraft with code: %s, cause: ", aircraftCode), ex.getCause());
-      throw ex;
-    }
+    return aircraftsService.findAircraftById(aircraftCode);
   }
 
   private AirportDto getAirportDto(String airportCode) {
-    try {
-      return airportsService.findAirportById(airportCode);
-    } catch (PersistenceException ex) {
-      log.error(
-          String.format("Can't find airport with code: %s, cause: ", airportCode), ex.getCause());
-      throw ex;
-    }
+    return airportsService.findAirportById(airportCode);
   }
 }

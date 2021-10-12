@@ -1,6 +1,8 @@
 package com.app.airport.controller;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 import com.app.airport.dto.FlightDto;
@@ -66,7 +68,8 @@ public class MainController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping
-  public List<FlightDto> getAllFlights(@RequestParam(required = false) String flightNo) {
+  public List<FlightDto> getAllFlights(
+      @NotNull @NotBlank @RequestParam(required = false) String flightNo) {
     return service.findFlights(flightNo);
   }
 
@@ -194,7 +197,7 @@ public class MainController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping("/status/{status}")
-  public List<FlightDto> getFlightsByStatus(@PathVariable String status) {
+  public List<FlightDto> getFlightsByStatus(@NotNull @NotBlank @PathVariable String status) {
     return service.findFlightsByStatus(status);
   }
 
@@ -231,7 +234,7 @@ public class MainController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping("/departures/{date}")
-  public List<FlightDto> getFlightsByStatus(@PathVariable Date date) {
+  public List<FlightDto> getFlightsByStatus(@NotNull @NotBlank @PathVariable Date date) {
     return service.findFlightsByDepartureDate(date);
   }
 
@@ -268,13 +271,13 @@ public class MainController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping("/id/{id}")
-  public FlightDto getFlightById(@PathVariable Integer id) {
+  public FlightDto getFlightById(@NotNull @NotBlank @PathVariable Integer id) {
     return service.getFlightById(id);
   }
 
   @Operation(
       summary = "Save new flight",
-      parameters = {@Parameter(in = ParameterIn.PATH, name = "flight")})
+      parameters = {@Parameter(in = ParameterIn.DEFAULT, name = "flight")})
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -301,13 +304,17 @@ public class MainController {
   }
 
   @Operation(
-      summary = "Delete existing flight by it's identificator",
+      summary = "Delete existing flight by it's identificator or by flightDto object",
       parameters = {
         @Parameter(
             in = ParameterIn.PATH,
             name = "id",
             schema =
-                @Schema(type = "integer", required = true, description = "Flight identificator"))
+                @Schema(type = "integer", required = true, description = "Flight identificator")),
+        @Parameter(
+            in = ParameterIn.DEFAULT,
+            name = "flightDto",
+            schema = @Schema(type = "FlightDto", description = "Flight object to delete"))
       })
   @ApiResponses(
       value = {
@@ -323,7 +330,8 @@ public class MainController {
       })
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteFlight(@PathVariable Integer id) {
-    service.deleteFlightById(id);
+  public void deleteFlight(
+      @NotNull @NotBlank @PathVariable Integer id, @RequestBody(required = false) FlightDto flightDto) {
+    service.deleteFlight(id, flightDto);
   }
 }

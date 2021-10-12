@@ -1,12 +1,9 @@
 package com.app.airport.service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import com.app.airport.dto.AirportDto;
 import com.app.airport.entity.Airport;
 import com.app.airport.repository.AirportsRepository;
@@ -39,27 +36,12 @@ public class AirportsService {
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void saveNewAirport(@NotNull AirportDto airportDto) {
-    log.debug(
-        String.format(
-            "Saving new airport with code: %s, and name: %s",
-            airportDto.getAirportCode(), airportDto.getAirportName()));
-    try {
-      repository.save(mapAirportEntityFromDto(airportDto));
-    } catch (PersistenceException ex) {
-      log.error(
-          String.format("Can't save airport with code: %s, cause: ", airportDto.getAirportCode())
-              + ex.getCause());
-    }
+    repository.save(mapAirportEntityFromDto(airportDto));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void deleteAircraft(@NotNull @NotBlank String id) {
-    log.debug("Deleting airport with id: " + id);
-    try {
-      repository.deleteById(id);
-    } catch (PersistenceException ex) {
-      log.error(String.format("Can't delete airport with code: %s, cause: ", id) + ex.getCause());
-    }
+    repository.deleteById(id);
   }
 
   private AirportDto mapAirportDtoFromEntity(Airport airport) {

@@ -1,6 +1,5 @@
 package com.app.airport.service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,10 +52,6 @@ public class TicketFlightsService {
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void saveNewTicketFlight(TicketFlightDto ticketFlightDto) {
     if (!isNull(ticketFlightDto) && !isNull(ticketFlightDto.getTicket().getTicketNo())) {
-      log.debug(
-          String.format(
-              "Deleting ticketFlight with id: : ticketNo - %s, flightId - %s",
-              ticketFlightDto.getTicket().getTicketNo(), ticketFlightDto.getFlightId()));
       repository.save(mapTicketFlightEntityFromDto(ticketFlightDto));
       ticketsService.saveNewTicket(ticketFlightDto.getTicket());
       boardingPassesService.saveNewBoardingPass(ticketFlightDto.getBoardPass());
@@ -73,33 +68,9 @@ public class TicketFlightsService {
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void deleteTicketFLightById(CompositeId id, String ticketNo) {
-    log.debug(
-        String.format(
-            "Deleting ticketFlight with id: : ticketNo - %s, flightId - %s",
-            id.getTicketNo(), id.getFlightId()));
     repository.deleteById(id);
     ticketsService.deleteTicket(ticketNo);
     boardingPassesService.deleteBoardingPass(id);
-  }
-
-  @Transactional(value = Transactional.TxType.REQUIRED)
-  public TicketFlight updateTicketFlight(TicketFlight newTicketFlight, CompositeId id) {
-    return repository
-        .findById(id)
-        .map(
-            ticketFlight -> {
-              ticketFlight.setTicketNo(id.getTicketNo());
-              ticketFlight.setFlightId(id.getFlightId());
-              ticketFlight.setFareConditions(newTicketFlight.getFareConditions());
-              ticketFlight.setAmount(newTicketFlight.getAmount());
-              return repository.save(ticketFlight);
-            })
-        .orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    String.format(
-                        "Cannot find entity \"TicketFlight\" to update, with id: ticketNo - %s, flightId - %s",
-                        id.getTicketNo(), id.getFlightId())));
   }
 
   private List<TicketFlightDto> mapTicketFlightDtosFromEntities(List<TicketFlight> ticketFlights) {

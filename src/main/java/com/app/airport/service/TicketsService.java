@@ -1,7 +1,6 @@
 package com.app.airport.service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import java.util.List;
 import com.app.airport.dto.BookingDto;
@@ -46,15 +45,7 @@ public class TicketsService {
   }
 
   private void saveTicket(Ticket ticket) {
-    log.debug("Saving new ticket with no: " + ticket.getTicketNo());
-    try {
-      repository.save(ticket);
-    } catch (PersistenceException ex) {
-      log.error(
-          String.format("Can't save ticket with id: %s, cause: ", ticket.getTicketNo()),
-          ex.getCause());
-      throw ex;
-    }
+    repository.save(ticket);
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
@@ -64,13 +55,7 @@ public class TicketsService {
   }
 
   private void deleteExistingTicket(String id) {
-    log.debug("Deleting ticket with no: " + id);
-    try {
-      repository.deleteById(id);
-    } catch (PersistenceException ex) {
-      log.error(String.format("Can't save ticket with id: %s, cause: ", id), ex.getCause());
-      throw ex;
-    }
+    repository.deleteById(id);
   }
 
   private void deleteBookings(List<BookingDto> bookingDtoList) {
@@ -79,10 +64,6 @@ public class TicketsService {
 
   private TicketDto mapTicketDtoFromEntity(Ticket ticket) {
     return mapper.mapEntityToDto(ticket, findBookingDtos(ticket.getBookRef()));
-  }
-
-  private BookingDto findBookingDto(String bookRef) {
-    return bookingsService.findBookingById(bookRef);
   }
 
   private List<BookingDto> findBookingDtos(String id) {

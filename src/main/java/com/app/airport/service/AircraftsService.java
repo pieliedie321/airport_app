@@ -1,7 +1,6 @@
 package com.app.airport.service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -42,37 +41,22 @@ public class AircraftsService {
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void saveNewAircraft(AircraftDto aircraftDto) {
-    log.debug("Saving new aircraft with code: " + aircraftDto.getCode());
     saveAircraft(mapAircraftEntityFromDto(aircraftDto));
     saveSeats(aircraftDto.getSeats());
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void deleteAircraft(String code) {
-    log.debug("Deleting aircraft with id: " + code);
     deleteEntity(code);
   }
 
   private void deleteEntity(String code) {
-    try {
-      repository.deleteById(code);
-      seatsService.deleteAircraftSeats(code);
-    } catch (PersistenceException ex) {
-      log.error(
-          String.format("Can't delete aircraft with code: %s, cause: ", code) + ex.getCause());
-      throw ex;
-    }
+    repository.deleteById(code);
+    seatsService.deleteAircraftSeats(code);
   }
 
   private void saveAircraft(Aircraft aircraft) {
-    try {
-      repository.save(aircraft);
-    } catch (PersistenceException ex) {
-      log.error(
-          String.format("Can't save aircraft with code: %s, cause: ", aircraft.getCode())
-              + ex.getCause());
-      throw ex;
-    }
+    repository.save(aircraft);
   }
 
   private void saveSeats(@NotEmpty @NotNull List<SeatDto> seatDtos) {
@@ -88,13 +72,6 @@ public class AircraftsService {
   }
 
   private List<SeatDto> getSeatDtos(String aircraftCode) {
-    try {
-      return seatsService.findSeatsByAircraftCode(aircraftCode);
-    } catch (PersistenceException ex) {
-      log.error(
-          String.format("Can't delete aircraft with code: %s, cause: ", aircraftCode)
-              + ex.getCause());
-      throw ex;
-    }
+    return seatsService.findSeatsByAircraftCode(aircraftCode);
   }
 }
