@@ -11,6 +11,7 @@ spring:
       hibernate:
         enable_lazy_load_no_trans: true
         default_schema: bookings
+    open-in-view: false
 flights:
   response:
     limit: 25
