@@ -1,6 +1,5 @@
 package com.app.airport.service;
 
-import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,14 +38,7 @@ public class SeatsService {
   }
 
   private void saveNewSeat(Seat seat) {
-    log.debug("Saving new seat with no: " + seat.getSeatNo());
-    try {
-      repository.save(seat);
-    } catch (PersistenceException ex) {
-      log.error(
-          String.format("Can't save seat with id: %s, cause: ", seat.getSeatNo()) + ex.getCause());
-      throw ex;
-    }
+    repository.save(seat);
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
@@ -58,13 +50,7 @@ public class SeatsService {
   }
 
   private void deleteSeatById(String id) {
-    log.debug("Deleting seat with no: " + id);
-    try {
-      repository.deleteById(id);
-    } catch (PersistenceException ex) {
-      log.error(String.format("Can't delete seat with id: %s, cause: ", id) + ex.getCause());
-      throw ex;
-    }
+    repository.deleteById(id);
   }
 
   private List<SeatDto> mapSeatDtosFromEntities(List<Seat> seats) {

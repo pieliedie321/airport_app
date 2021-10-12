@@ -1,6 +1,5 @@
 package com.app.airport.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 import com.app.airport.entity.TicketFlight;
 import com.app.airport.entity.composite.CompositeId;

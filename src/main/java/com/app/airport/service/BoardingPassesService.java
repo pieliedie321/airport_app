@@ -1,6 +1,5 @@
 package com.app.airport.service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import com.app.airport.dto.BoardPassDto;
 import com.app.airport.entity.BoardPass;
@@ -35,19 +34,11 @@ public class BoardingPassesService {
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void saveNewBoardingPass(BoardPassDto boardPassDto) {
-    log.debug(
-        String.format(
-            "Deleting boardingPass with id: : ticketNo - %s, flightId - %s",
-            boardPassDto.getTicketNo(), boardPassDto.getFlightId()));
     repository.save(mapBoardPassEntityFromDto(boardPassDto));
   }
 
   @Transactional(value = Transactional.TxType.REQUIRED)
   public void deleteBoardingPass(CompositeId id) {
-    log.debug(
-        String.format(
-            "Deleting boardingPass with id: : ticketNo - %s, flightId - %s",
-            id.getTicketNo(), id.getFlightId()));
     repository.deleteById(id);
   }
 

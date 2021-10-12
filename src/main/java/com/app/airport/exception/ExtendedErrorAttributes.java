@@ -1,17 +1,16 @@
 package com.app.airport.exception;
 
-import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
-import org.springframework.stereotype.Component;
-import org.springframework.util.ClassUtils;
-import org.springframework.web.context.request.WebRequest;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
-
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.context.request.WebRequest;
 import static java.util.Objects.nonNull;
 
 @Component

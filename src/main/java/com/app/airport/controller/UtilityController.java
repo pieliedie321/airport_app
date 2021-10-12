@@ -1,6 +1,8 @@
 package com.app.airport.controller;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import com.app.airport.dto.AircraftDto;
 import com.app.airport.dto.AirportDto;
 import com.app.airport.service.AircraftsService;
@@ -69,7 +71,7 @@ public class UtilityController {
       })
   @DeleteMapping("/aircraft/{code}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteAircraft(@PathVariable String code) {
+  public void deleteAircraft(@NotNull @NotBlank @PathVariable String code) {
     aircraftsService.deleteAircraft(code);
   }
 
@@ -104,7 +106,7 @@ public class UtilityController {
       })
   @DeleteMapping("/airport/{code}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteAirport(@PathVariable String code) {
+  public void deleteAirport(@NotNull @NotBlank @PathVariable String code) {
     airportsService.deleteAircraft(code);
   }
 }
