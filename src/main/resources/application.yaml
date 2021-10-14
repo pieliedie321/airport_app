@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/demo
-    username: postgres
-    password: 1303
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:demo}
+    username: ${POSTGRES_USR:postgres}
+    password: ${POSTGRES_PASS:1303}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -15,3 +15,10 @@ spring:
 flights:
   response:
     limit: 25
+logging:
+  file:
+    path: ${HOME}/Airport/logs
+  level:
+    com:
+      app:
+        airport: trace
