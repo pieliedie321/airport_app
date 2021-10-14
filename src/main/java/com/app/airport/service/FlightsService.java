@@ -16,6 +16,7 @@ import com.app.airport.repository.FlightsRepository;
 import com.app.airport.utils.mapper.FlightsMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
@@ -49,39 +50,48 @@ public class FlightsService {
     this.config = config;
   }
 
+  @Cacheable(value = "flights")
   public List<FlightDto> findFlights(String flightNo) {
     return isNull(flightNo)
         ? mapFlightsToDto(repository.findAllFlightsLimit(config.getLimit()))
-        : mapFlightsToDto(repository.findFlightByFlightNoContaining(flightNo));
+        : mapFlightsToDto(repository.findFlightByFlightNoContaining(flightNo, config.getLimit()));
   }
 
+  @Cacheable(value = "arrivalFlights")
   public List<FlightDto> findLatestArrivalFlights() {
     return mapFlightsToDto(repository.findAllFlightsOrderByArrivalDate(config.getLimit()));
   }
 
+  @Cacheable(value = "departureFlights")
   public List<FlightDto> findLatestDepartureFlights() {
     return mapFlightsToDto(repository.findAllFlightsOrderByDepartureDate(config.getLimit()));
   }
 
+  @Cacheable(value = "statusFlights")
   public List<FlightDto> findFlightsByStatus(String status) {
-    return mapFlightsToDto(repository.findFlightsByStatus(status));
+    return mapFlightsToDto(repository.findFlightsByStatus(status, config.getLimit()));
   }
 
-  public List<FlightDto> findFlightsByDepartureDate(Date departureDate) {
-    return mapFlightsToDto(repository.findFlightsByScheduledDepartureBefore(departureDate));
+  @Cacheable(value = "shceduledDepartureFlights")
+  public List<FlightDto> findFlightsByDepartureDateScheduledBefore(Date departureDate) {
+    return mapFlightsToDto(
+        repository.findFlightsByScheduledDepartureBefore(departureDate, config.getLimit()));
   }
 
+  @Cacheable(value = "airportFlights")
   public List<FlightDto> getFlightsByAirport(String arrival, String departure) {
     if (isNull(arrival) && isNull(departure)) {
       throw new IllegalArgumentException("Arrival and departure can't be combined null");
     } else {
       if (isNull(departure)) {
-        return mapFlightsToDto(repository.findFlightsByArrivalAirport(arrival));
+        return mapFlightsToDto(repository.findFlightsByArrivalAirport(arrival, config.getLimit()));
       } else if (isNull(arrival)) {
-        return mapFlightsToDto(repository.findFlightsByDepartureAirport(departure));
+        return mapFlightsToDto(
+            repository.findFlightsByDepartureAirport(departure, config.getLimit()));
       } else {
         return mapFlightsToDto(
-            repository.findFlightsByArrivalAirportAndDepartureAirport(arrival, departure));
+            repository.findFlightsByArrivalAirportAndDepartureAirport(
+                arrival, departure, config.getLimit()));
       }
     }
   }

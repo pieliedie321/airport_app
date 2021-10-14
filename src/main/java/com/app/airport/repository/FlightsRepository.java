@@ -24,16 +24,41 @@ public interface FlightsRepository extends JpaRepository<Flight, Integer> {
   @Query(value = "SELECT * FROM flights LIMIT :limit", nativeQuery = true)
   List<Flight> findAllFlightsLimit(@Param("limit") int limit);
 
-  List<Flight> findFlightByFlightNoContaining(String query);
+  @Query(
+      value = "SELECT * FROM flights WHERE flight_no LIKE %:query% LIMIT :limit",
+      nativeQuery = true)
+  List<Flight> findFlightByFlightNoContaining(
+      @Param("query") String query, @Param("limit") int limit);
 
-  List<Flight> findFlightsByStatus(String status);
+  @Query(
+      value = "SELECT * FROM flights WHERE status LIKE %:status% LIMIT :limit",
+      nativeQuery = true)
+  List<Flight> findFlightsByStatus(@Param("status") String status, @Param("limit") int limit);
 
-  List<Flight> findFlightsByScheduledDepartureBefore(Date departureDate);
+  @Query(
+      value = "SELECT * FROM flights WHERE :departureDate < scheduled_arrival LIMIT :limit",
+      nativeQuery = true)
+  List<Flight> findFlightsByScheduledDepartureBefore(
+      @Param("departureDate") Date departureDate, @Param("limit") int limit);
 
-  List<Flight> findFlightsByArrivalAirport(String airport);
+  @Query(
+      value = "SELECT * FROM flights WHERE arrival_airport LIKE %:arrivalAirport% LIMIT :limit",
+      nativeQuery = true)
+  List<Flight> findFlightsByArrivalAirport(
+      @Param("arrivalAirport") String airport, @Param("limit") int limit);
 
-  List<Flight> findFlightsByDepartureAirport(String airport);
+  @Query(
+      value = "SELECT * FROM flights WHERE departure_airport LIKE %:departureAirport% LIMIT :limit",
+      nativeQuery = true)
+  List<Flight> findFlightsByDepartureAirport(
+      @Param("departureAirport") String airport, @Param("limit") int limit);
 
+  @Query(
+      value =
+          "SELECT * FROM flights WHERE arrival_airport LIKE %:arrivalAirport% AND departure_airport LIKE %:departureAirport% LIMIT :limit",
+      nativeQuery = true)
   List<Flight> findFlightsByArrivalAirportAndDepartureAirport(
-      String arrivalAirport, String departureAirport);
+      @Param("arrivalAirport") String arrivalAirport,
+      @Param("departureAirport") String departureAirport,
+      @Param("limit") int limit);
 }

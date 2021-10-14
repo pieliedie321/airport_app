@@ -235,7 +235,7 @@ public class MainController {
       })
   @GetMapping("/departures/{date}")
   public List<FlightDto> getFlightsByStatus(@NotNull @NotBlank @PathVariable Date date) {
-    return service.findFlightsByDepartureDate(date);
+    return service.findFlightsByDepartureDateScheduledBefore(date);
   }
 
   @Operation(
