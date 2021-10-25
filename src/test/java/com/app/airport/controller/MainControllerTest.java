@@ -38,14 +38,6 @@ public class MainControllerTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
 
-//    @Test
-//    public void testGetFlightById() throws Exception {
-//      mockMvc
-//          .perform(get("/flights/id/1"))
-//          .andExpect(status().isOk())
-//          .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-//    }
-
   @Test
   public void testGetFlightByStatus() throws Exception {
     mockMvc
