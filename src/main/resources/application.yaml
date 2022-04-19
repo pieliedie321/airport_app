@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:demo}
     username: ${POSTGRES_USR:postgres}
-    password: ${POSTGRES_PASS:1303}
+    password: ${POSTGRES_PASS:postgres}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -17,7 +17,7 @@ flights:
     limit: 25
 logging:
   file:
-    path: ${HOME}/Airport/logs
+    path: ${HOME:C:/Users/neonj}/Airport/logs
   level:
     com:
       app:
